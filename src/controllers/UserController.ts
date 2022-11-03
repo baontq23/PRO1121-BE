@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { validate } from "class-validator";
 import { AppDataSource } from "../data-source";
-import { User } from "../entity/User";
+import { Teacher } from "../entity/Teacher";
 
-class UserController {
+class TeacherController {
 
   static listAll = async (req: Request, res: Response) => {
     //Get users from database
-    const userRepository = AppDataSource.getRepository(User);
-    const users = await userRepository.find({
-      select: ["id", "username", "role"] //We dont want to send the passwords on response
+    const teacherRepository = AppDataSource.getRepository(Teacher);
+    const users = await teacherRepository.find({
+      select: ["id", "username", "phone"] //We dont want to send the passwords on response
     });
 
     //Send the users object
@@ -20,11 +20,11 @@ class UserController {
     //Get the ID from the url
     const id: number = parseInt(req.params.id);
     //Get the user from database
-    const userRepository = AppDataSource.getRepository(User);
+    const teacherRepository = AppDataSource.getRepository(Teacher);
     try {
-      const user = await userRepository.findOneOrFail({
+      const user = await teacherRepository.findOneOrFail({
         where: { id: id },
-        select: ["id", "username", "role"] //We dont want to send the password on response
+        select: ["id", "username", "phone"] //We dont want to send the password on response
       });
       res.send({error: false, result: user})
     } catch (error) {
@@ -34,28 +34,30 @@ class UserController {
 
   static newUser = async (req: Request, res: Response) => {
     //Get parameters from the body
-    let { username, password, role } = req.body;
-    let user = new User();
-    user.username = username;
-    user.password = password;
-    user.role = role;
+    let { username, password, name} = req.body;
+    let teacher = new Teacher();
+    teacher.username = username;
+    teacher.password = password;
+    teacher.name = name;
 
     //Validade if the parameters are ok
-    const errors = await validate(user);
+    const errors = await validate(teacher);
     if (errors.length > 0) {
       res.status(400).send(errors);
       return;
     }
 
     //Hash the password, to securely store on DB
-    user.hashPassword();
+    teacher.hashPassword();
 
     //Try to save. If fails, the username is already in use
-    const userRepository = AppDataSource.getRepository(User);
+    const teacherRepository = AppDataSource.getRepository(Teacher);
     try {
-      await userRepository.save(user);
+      await teacherRepository.save(teacher);
     } catch (e) {
-      res.status(409).send("username already in use");
+      console.log(e);
+      
+      res.status(409).send("Username already in use");
       return;
     }
 
@@ -68,23 +70,22 @@ class UserController {
     const id: number = parseInt(req.params.id);
 
     //Get values from the body
-    const { username, role } = req.body;
+    const { username } = req.body;
 
     //Try to find user on database
-    const userRepository = AppDataSource.getRepository(User);
-    let user: User;
+    const teacherRepository = AppDataSource.getRepository(Teacher);
+    let teacher: Teacher;
     try {
-      user = await userRepository.findOneOrFail({ where: { id: id } });
+      teacher = await teacherRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
       //If not found, send a 404 response
-      res.status(404).send("User not found");
+      res.status(404).send("Teacher not found");
       return;
     }
 
     //Validate the new values on model
-    user.username = username;
-    user.role = role;
-    const errors = await validate(user);
+    teacher.username = username;
+    const errors = await validate(teacher);
     if (errors.length > 0) {
       res.status(400).send(errors);
       return;
@@ -92,7 +93,7 @@ class UserController {
 
     //Try to safe, if fails, that means username already in use
     try {
-      await userRepository.save(user);
+      await teacherRepository.save(teacher);
     } catch (e) {
       res.status(409).send("username already in use");
       return;
@@ -103,21 +104,21 @@ class UserController {
 
   static deleteUser = async (req: Request, res: Response) => {
     //Get the ID from the url
-    const id = parseInt(req.params.id);
+    // const id = parseInt(req.params.id);
 
-    const userRepository = AppDataSource.getRepository(User);
-    let user: User;
-    try {
-      user = await userRepository.findOneOrFail({ where: { id: id } });
-    } catch (error) {
-      res.status(404).send("User not found");
-      return;
-    }
-    userRepository.delete(id);
+    // const teacherRepository = AppDataSource.getRepository(User);
+    // let user: User;
+    // try {
+    //   user = await teacherRepository.findOneOrFail({ where: { id: id } });
+    // } catch (error) {
+    //   res.status(404).send("User not found");
+    //   return;
+    // }
+    // teacherRepository.delete(id);
 
-    //After all send a 204 (no content, but accepted) response
-    res.status(204).send();
+    // //After all send a 204 (no content, but accepted) response
+    // res.status(204).send();
   };
 };
 
-export default UserController;
+export default TeacherController;
