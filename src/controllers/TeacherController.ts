@@ -8,7 +8,7 @@ class TeacherController {
     //Get users from database
     const teacherRepository = AppDataSource.getRepository(Teacher);
     const teachers = await teacherRepository.find({
-      select: ['id', 'username', 'phone', 'dob']
+      select: ['id', 'name', 'phone', 'dob']
     });
 
     //Send the users object
@@ -23,7 +23,7 @@ class TeacherController {
     try {
       const user = await teacherRepository.findOneOrFail({
         where: { id: id },
-        select: ['id', 'username', 'phone'] //We dont want to send the password on response
+        select: ['id', 'name', 'phone'] //We dont want to send the password on response
       });
       res.send({ error: false, result: user });
     } catch (error) {
@@ -33,18 +33,22 @@ class TeacherController {
 
   static newUser = async (req: Request, res: Response) => {
     //Get parameters from the body
-
     
-    let { username, password, name } = req.body;
+    let { phone, password, name, email } = req.body;
     let teacher = new Teacher();
-    teacher.username = username;
+    teacher.phone = phone;
     teacher.password = password;
     teacher.name = name;
+    teacher.email = email;
 
     //Validade if the parameters are ok
     const errors = await validate(teacher);
     if (errors.length > 0) {
-      res.status(400).send(errors);
+      res.status(400).send({
+        error: true,
+        code: 400,
+        message:  errors[0].constraints
+      });
       return;
     }
 
@@ -57,37 +61,53 @@ class TeacherController {
       await teacherRepository.save(teacher);
     } catch (e) {
       console.log(e);
-      res.status(409).send('Username already in use');
+      res.status(409).send({
+        error: true,
+        code: 409,
+        message: 'Email hoặc số điện thoại đã được đăng ký, vui lòng đăng nhập hoặc thử lại với thông tin khác!'
+      });
       return;
     }
 
     //If all ok, send 201 response
-    res.status(201).send('User created');
+    res.status(201).send({
+      error: false,
+      code: 201,
+      message: 'Đăng ký thành công!'
+    });
   };
 
   static editUser = async (req: Request, res: Response) => {
-    //Get the ID from the url
-    const id: number = parseInt(req.params.id);
-
     //Get values from the body
-    const { username } = req.body;
+    const { teacher_id, teacher_name, teacher_email, teacher_dob, teacher_phone } = req.body;
 
     //Try to find user on database
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let teacher: Teacher;
     try {
-      teacher = await teacherRepository.findOneOrFail({ where: { id: id } });
+      teacher = await teacherRepository.findOneOrFail({ where: { id: teacher_id } });
     } catch (error) {
       //If not found, send a 404 response
-      res.status(404).send('Teacher not found');
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Giáo viên không tồn tại!'
+      });
       return;
     }
 
     //Validate the new values on model
-    teacher.username = username;
+    teacher.email = teacher_email;
+    teacher.name = teacher_name;
+    teacher.dob = teacher_dob;
+    teacher.phone = teacher_phone;
     const errors = await validate(teacher);
     if (errors.length > 0) {
-      res.status(400).send(errors);
+      res.status(400).send({
+        error: true,
+        code: 400,
+        message: errors
+      });
       return;
     }
 
@@ -95,7 +115,11 @@ class TeacherController {
     try {
       await teacherRepository.save(teacher);
     } catch (e) {
-      res.status(409).send('username already in use');
+      res.status(409).send({
+        error: true,
+        code: 409,
+        message: 'Email hoặc số điện thoại đã tồn tại trên hệ thống!'
+      });
       return;
     }
     //After all send a 204 (no content, but accepted) response

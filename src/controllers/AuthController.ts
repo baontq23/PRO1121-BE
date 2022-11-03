@@ -9,8 +9,8 @@ import config from "../config/config";
 class AuthController {
   static login = async (req: Request, res: Response) => {
     //Check if username and password are set
-    let { username, password } = req.body;
-    if (!(username && password)) {
+    let { phone, password } = req.body;
+    if (!(phone && password)) {
       res.status(400).send();
     }
 
@@ -18,7 +18,7 @@ class AuthController {
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let teacher: Teacher;
     try {
-      teacher = await teacherRepository.findOneOrFail({ where: { username } });
+      teacher = await teacherRepository.findOneOrFail({ where: { phone } });
     } catch (error) {
       res.status(401).send();
       return;

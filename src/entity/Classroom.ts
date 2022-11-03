@@ -1,3 +1,4 @@
+import { IsNotEmpty } from 'class-validator';
 import {
   Column,
   Entity,
@@ -7,14 +8,18 @@ import {
 } from 'typeorm';
 import { Teacher } from './Teacher';
 
-@Entity()
+@Entity({name: 'tbl_classrooms'})
 export class Classroom {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'text' })
+  @IsNotEmpty()
   name: string;
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'text', default: 'Chưa có mô tả cho lớp này'})
   decription: string;
+  @Column({type: 'text'})
+  @IsNotEmpty()
+  subject: string;
   @ManyToOne(() => Teacher, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

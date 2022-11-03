@@ -1,33 +1,29 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  Unique
-} from "typeorm";
-import { Length, IsNotEmpty } from "class-validator";
-import * as bcrypt from "bcryptjs";
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import { IsNotEmpty } from 'class-validator';
+import * as bcrypt from 'bcryptjs';
 
-@Entity()
-@Unique(["username"])
+@Entity({ name: 'tbl_teachers' })
+
 export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  username: string;
+  @Column({ type: 'text', unique: true, nullable: true})
+  email: string;
 
   @Column()
-  @Length(4, 100)
+  @IsNotEmpty({ message: 'Mật khẩu không thể để trống!' })
   password: string;
 
   @Column()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Họ tên không thể để trống!' })
   name: string;
 
-  @Column({default: '0'})
+  @Column({ type: 'text', unique:true})
+  @IsNotEmpty({message: 'Số điện thoại không thể để trống!'})
   phone: string;
 
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   dob: Date;
 
   hashPassword() {

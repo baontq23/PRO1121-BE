@@ -13,7 +13,7 @@ router.get('/:id([0-9]+)', TeacherController.getOneById);
 router.post('/', TeacherController.newUser);
 
 //Edit one user
-router.patch('/:id([0-9]+)', TeacherController.editUser);
+router.patch('/', TeacherController.editUser);
 
 //Delete one user
 router.delete('/:id([0-9]+)', TeacherController.deleteUser);
