@@ -21,6 +21,7 @@ class AuthController {
       teacher = await teacherRepository.findOneOrFail({ where: { username } });
     } catch (error) {
       res.status(401).send();
+      return;
     }
 
     //Check if encrypted password match
@@ -36,12 +37,11 @@ class AuthController {
   };
 
   static changePassword = async (req: Request, res: Response) => {
-    //Get ID from JWT
-    const id = res.locals.jwtPayload.userId;
+    const id = req.body.teacher_id;
 
     //Get parameters from the body
-    const { oldPassword, newPassword } = req.body;
-    if (!(oldPassword && newPassword)) {
+    const { old_password, new_password } = req.body;
+    if (!(old_password && new_password)) {
       res.status(400).send();
     }
 
@@ -50,18 +50,20 @@ class AuthController {
     let teacher: Teacher;
     try {
       teacher = await teacherRepository.findOneOrFail(id);
-    } catch (id) {
+    } catch (error) {
+      console.log(error);
       res.status(401).send();
+      return;
     }
 
     //Check if old password matchs
-    if (!teacher.checkIfUnencryptedPasswordIsValid(oldPassword)) {
+    if (!teacher.checkIfUnencryptedPasswordIsValid(old_password)) {
       res.status(401).send();
       return;
     }
 
     //Validate de model (password lenght)
-    teacher.password = newPassword;
+    teacher.password = new_password;
     const errors = await validate(teacher);
     if (errors.length > 0) {
       res.status(400).send(errors);

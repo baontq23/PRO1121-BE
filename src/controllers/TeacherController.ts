@@ -1,19 +1,18 @@
-import { Request, Response } from "express";
-import { validate } from "class-validator";
-import { AppDataSource } from "../data-source";
-import { Teacher } from "../entity/Teacher";
+import { Request, Response } from 'express';
+import { validate } from 'class-validator';
+import { AppDataSource } from '../data-source';
+import { Teacher } from '../entity/Teacher';
 
 class TeacherController {
-
   static listAll = async (req: Request, res: Response) => {
     //Get users from database
     const teacherRepository = AppDataSource.getRepository(Teacher);
-    const users = await teacherRepository.find({
-      select: ["id", "username", "phone"] //We dont want to send the passwords on response
+    const teachers = await teacherRepository.find({
+      select: ['id', 'username', 'phone', 'dob']
     });
 
     //Send the users object
-    res.send(users);
+    res.send(teachers);
   };
 
   static getOneById = async (req: Request, res: Response) => {
@@ -24,17 +23,19 @@ class TeacherController {
     try {
       const user = await teacherRepository.findOneOrFail({
         where: { id: id },
-        select: ["id", "username", "phone"] //We dont want to send the password on response
+        select: ['id', 'username', 'phone'] //We dont want to send the password on response
       });
-      res.send({error: false, result: user})
+      res.send({ error: false, result: user });
     } catch (error) {
-      res.status(404).send("User not found");
+      res.status(404).send('User not found');
     }
   };
 
   static newUser = async (req: Request, res: Response) => {
     //Get parameters from the body
-    let { username, password, name} = req.body;
+
+    
+    let { username, password, name } = req.body;
     let teacher = new Teacher();
     teacher.username = username;
     teacher.password = password;
@@ -56,13 +57,12 @@ class TeacherController {
       await teacherRepository.save(teacher);
     } catch (e) {
       console.log(e);
-      
-      res.status(409).send("Username already in use");
+      res.status(409).send('Username already in use');
       return;
     }
 
     //If all ok, send 201 response
-    res.status(201).send("User created");
+    res.status(201).send('User created');
   };
 
   static editUser = async (req: Request, res: Response) => {
@@ -79,7 +79,7 @@ class TeacherController {
       teacher = await teacherRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
       //If not found, send a 404 response
-      res.status(404).send("Teacher not found");
+      res.status(404).send('Teacher not found');
       return;
     }
 
@@ -95,7 +95,7 @@ class TeacherController {
     try {
       await teacherRepository.save(teacher);
     } catch (e) {
-      res.status(409).send("username already in use");
+      res.status(409).send('username already in use');
       return;
     }
     //After all send a 204 (no content, but accepted) response
@@ -105,7 +105,6 @@ class TeacherController {
   static deleteUser = async (req: Request, res: Response) => {
     //Get the ID from the url
     // const id = parseInt(req.params.id);
-
     // const teacherRepository = AppDataSource.getRepository(User);
     // let user: User;
     // try {
@@ -115,10 +114,9 @@ class TeacherController {
     //   return;
     // }
     // teacherRepository.delete(id);
-
     // //After all send a 204 (no content, but accepted) response
     // res.status(204).send();
   };
-};
+}
 
 export default TeacherController;
