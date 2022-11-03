@@ -1,6 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { Teacher } from "./entity/Teacher"
+import { Classroom } from "./entity/Classroom"
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: "easyedu_db",
   synchronize: true,
   logging: false,
-  entities: [Teacher],
+  entities: [Teacher, Classroom],
   migrations: ['src/migration/**/*.js'],
   subscribers: [],
 })
