@@ -106,7 +106,7 @@ class TeacherController {
       res.status(400).send({
         error: true,
         code: 400,
-        message: errors
+        message: errors[0].constraints
       });
       return;
     }
