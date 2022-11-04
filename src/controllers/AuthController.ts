@@ -1,10 +1,7 @@
-import { Request, Response } from "express";
-import * as jwt from "jsonwebtoken";
-import { AppDataSource } from "../data-source";
-import { validate } from "class-validator";
-
-import { Teacher } from "../entity/Teacher";
-import config from "../config/config";
+import { Request, Response } from 'express';
+import { AppDataSource } from '../data-source';
+import { validate } from 'class-validator';
+import { Teacher } from '../entity/Teacher';
 
 class AuthController {
   static login = async (req: Request, res: Response) => {
@@ -18,7 +15,9 @@ class AuthController {
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let teacher: Teacher;
     try {
-      teacher = await teacherRepository.findOneOrFail({ where: { phone } });
+      teacher = await teacherRepository.findOneOrFail({
+        where: { phone }
+      });
     } catch (error) {
       res.status(401).send();
       return;
@@ -32,7 +31,7 @@ class AuthController {
     res.send({
       error: false,
       code: 200,
-      message: "Login successfully!"
+      data: teacher
     });
   };
 

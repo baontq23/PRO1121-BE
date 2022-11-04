@@ -23,17 +23,40 @@ class TeacherController {
     try {
       const user = await teacherRepository.findOneOrFail({
         where: { id: id },
-        select: ['id', 'name', 'phone'] //We dont want to send the password on response
+        select: ['id', 'name', 'email', 'phone', 'dob']
       });
-      res.send({ error: false, result: user });
+      res.send({ error: false, data: user });
     } catch (error) {
-      res.status(404).send('User not found');
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Không tìm thấy giáo viên!'
+      });
     }
   };
 
-  static newUser = async (req: Request, res: Response) => {
+  static getOneByEmail = async (req: Request, res: Response) => {
+    //Get the ID from the url
+    const email: string = req.params.email;
+    //Get the user from database
+    const teacherRepository = AppDataSource.getRepository(Teacher);
+    try {
+      const user = await teacherRepository.findOneOrFail({
+        where: { email },
+        select: ['id', 'name', 'email', 'phone', 'dob']
+      });
+      res.send({ error: false, data: user });
+    } catch (error) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Không tìm thấy giáo viên!'
+      });
+    }
+  };
+
+  static newTeacher = async (req: Request, res: Response) => {
     //Get parameters from the body
-    
     let { phone, password, name, email } = req.body;
     let teacher = new Teacher();
     teacher.phone = phone;
@@ -47,7 +70,7 @@ class TeacherController {
       res.status(400).send({
         error: true,
         code: 400,
-        message:  errors[0].constraints
+        message: errors[0].constraints
       });
       return;
     }
@@ -64,11 +87,11 @@ class TeacherController {
       res.status(409).send({
         error: true,
         code: 409,
-        message: 'Email hoặc số điện thoại đã được đăng ký, vui lòng đăng nhập hoặc thử lại với thông tin khác!'
+        message:
+          'Email hoặc số điện thoại đã được đăng ký, vui lòng đăng nhập hoặc thử lại với thông tin khác!'
       });
       return;
     }
-
     //If all ok, send 201 response
     res.status(201).send({
       error: false,
@@ -79,13 +102,21 @@ class TeacherController {
 
   static editUser = async (req: Request, res: Response) => {
     //Get values from the body
-    const { teacher_id, teacher_name, teacher_email, teacher_dob, teacher_phone } = req.body;
+    const {
+      id,
+      name,
+      email,
+      dob,
+      phone
+    } = req.body;
 
     //Try to find user on database
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let teacher: Teacher;
     try {
-      teacher = await teacherRepository.findOneOrFail({ where: { id: teacher_id } });
+      teacher = await teacherRepository.findOneOrFail({
+        where: { id }
+      });
     } catch (error) {
       //If not found, send a 404 response
       res.status(404).send({
@@ -97,10 +128,10 @@ class TeacherController {
     }
 
     //Validate the new values on model
-    teacher.email = teacher_email;
-    teacher.name = teacher_name;
-    teacher.dob = teacher_dob;
-    teacher.phone = teacher_phone;
+    teacher.email = email;
+    teacher.name = name;
+    teacher.dob = dob;
+    teacher.phone = phone;
     const errors = await validate(teacher);
     if (errors.length > 0) {
       res.status(400).send({
@@ -127,19 +158,23 @@ class TeacherController {
   };
 
   static deleteUser = async (req: Request, res: Response) => {
-    //Get the ID from the url
-    // const id = parseInt(req.params.id);
-    // const teacherRepository = AppDataSource.getRepository(User);
-    // let user: User;
-    // try {
-    //   user = await teacherRepository.findOneOrFail({ where: { id: id } });
-    // } catch (error) {
-    //   res.status(404).send("User not found");
-    //   return;
-    // }
-    // teacherRepository.delete(id);
-    // //After all send a 204 (no content, but accepted) response
-    // res.status(204).send();
+
+    const id = parseInt(req.params.id);
+    const teacherRepository = AppDataSource.getRepository(Teacher);
+    let user: Teacher;
+    try {
+      user = await teacherRepository.findOneOrFail({ where: { id: id } });
+    } catch (error) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Không tìm thấy thông tin giáo viên'
+      });
+      return;
+    }
+    teacherRepository.delete(id);
+    //After all send a 204 (no content, but accepted) response
+    res.status(204).send();
   };
 }
 
