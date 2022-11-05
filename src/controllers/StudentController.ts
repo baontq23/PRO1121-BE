@@ -1,7 +1,6 @@
 import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { Parent } from '../entity/Parent';
 import { Student } from '../entity/Student';
 
 export class StudentController {
@@ -23,9 +22,9 @@ export class StudentController {
       });
       return;
     }
-    const parentRepository = AppDataSource.getRepository(Student);
+    const studentRepository = AppDataSource.getRepository(Student);
     try {
-      await parentRepository.save(student);
+      await studentRepository.save(student);
     } catch (e) {
       console.log(e);
       res.status(500).send({
@@ -44,8 +43,8 @@ export class StudentController {
   };
 
   static listAll = async (req: Request, res: Response) => {
-    const studenRepository = AppDataSource.getRepository(Student);
-    const student = await studenRepository.find({
+    const studentRepository = AppDataSource.getRepository(Student);
+    const student = await studentRepository.find({
       select: ['id', 'name', 'gender', 'dob', 'parentId']
     });
     res.status(200).send({ error: false, data: student });
@@ -55,10 +54,10 @@ export class StudentController {
     const { id, name, dob, gender, parentId } = req.body;
 
     //Try to find user on database
-    const studenRepository = AppDataSource.getRepository(Student);
+    const studentRepository = AppDataSource.getRepository(Student);
     let student: Student;
     try {
-      student = await studenRepository.findOneOrFail({
+      student = await studentRepository.findOneOrFail({
         where: { id }
       });
     } catch (error) {
@@ -84,7 +83,7 @@ export class StudentController {
       });
       return;
     }
-    await studenRepository.save(student);
+    await studentRepository.save(student);
     res.status(204).send({ Error: false, Code: 204 });
   };
 

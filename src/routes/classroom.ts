@@ -14,7 +14,7 @@ router.patch('/', ClassroomController.editClassRoom);
 //Delete one ClassRoom
 router.delete('/:id([0-9]+)', ClassroomController.deleteClassRoom);
 
-//get listClass by id_teacher
+//get listClass by Id_teacher
 router.get('/teacherId/:teacherId([0-9]+)', ClassroomController.getListClassRoomtByTeacherId);
 
 export default router;

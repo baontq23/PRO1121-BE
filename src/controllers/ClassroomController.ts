@@ -51,7 +51,7 @@ class ClassroomController {
   };
   static editClassRoom = async (req: Request, res: Response) => {
     //Get values from the body
-    const { id, name , decription, subject,teacherId } = req.body;
+    const { id, name, decription, subject, teacherId } = req.body;
 
     //Try to find user on database
     const classRoomRepository = AppDataSource.getRepository(Classroom);
@@ -110,11 +110,11 @@ class ClassroomController {
     const teacherId = Number(req.params.teacherId);
     const classRoomRepository = AppDataSource.getRepository(Classroom);
     try {
-      const students = await classRoomRepository.find({
+      const classrooms = await classRoomRepository.find({
         where: { teacherId: { id: teacherId } },
         select: ['id', 'name', 'decription', 'subject', 'teacherId']
       });
-      res.status(200).send({ error: false, code: 200, data: students });
+      res.status(200).send({ error: false, code: 200, data: classrooms });
     } catch (error) {
       res.status(404).send({
         error: true,
