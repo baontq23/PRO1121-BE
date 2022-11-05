@@ -21,6 +21,6 @@ router.patch('/changePassword/:id([0-9]+)', ParentController.changePassword);
 router.get('/login/:email', ParentController.getOneByEmail);
 
 //login by Phone
-router.get('/login', ParentController.loginByPhone);
+router.post('/login', ParentController.loginByPhone);
 
 export default router;
