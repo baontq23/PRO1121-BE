@@ -55,10 +55,10 @@ export class StudentController {
     const { id, name, dob, gender, parentId } = req.body;
 
     //Try to find user on database
-    const parentRepository = AppDataSource.getRepository(Student);
+    const studenRepository = AppDataSource.getRepository(Student);
     let student: Student;
     try {
-      student = await parentRepository.findOneOrFail({
+      student = await studenRepository.findOneOrFail({
         where: { id }
       });
     } catch (error) {
@@ -84,7 +84,7 @@ export class StudentController {
       });
       return;
     }
-    await parentRepository.save(student);
+    await studenRepository.save(student);
     res.status(204).send({ Error: false, Code: 204 });
   };
 
@@ -130,7 +130,6 @@ export class StudentController {
   static getListStudentByParentId = async (req: Request, res: Response) => {
     const parentId = req.params.parentId;
     const studentRepository = AppDataSource.getRepository(Student);
-
     try {
       const students = await studentRepository.find({
         where: { parentId: { id: parentId } },
