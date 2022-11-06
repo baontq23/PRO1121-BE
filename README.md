@@ -1,6 +1,6 @@
-# jwt-express-mysql-typeorm-typescript-template
+# EasyEdu API Server
 
-Simple Rest API template with JWT, MySql, Express, Typeorm
+Rest API with Typescript, JWT, MySql, Express, Typeorm
 
 ## How to dev
 
