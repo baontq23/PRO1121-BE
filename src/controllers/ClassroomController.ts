@@ -5,13 +5,12 @@ import { Classroom } from '../entity/Classroom';
 
 class ClassroomController {
   static newClassroom = async (req: Request, res: Response) => {
-    let { id, name, decription, subject, teacherId } = req.body;
+    let { name, description, subject, teacher_id } = req.body;
     let classroom = new Classroom();
-    classroom.id = id;
     classroom.name = name;
-    classroom.decription = decription;
+    classroom.description = description;
     classroom.subject = subject;
-    classroom.teacherId = teacherId;
+    classroom.teacherId = teacher_id;
 
     const errors = await validate(classroom);
     if (errors.length > 0) {
@@ -30,7 +29,7 @@ class ClassroomController {
       res.status(500).send({
         error: true,
         code: 500,
-        message: 'server error'
+        message: 'Server error'
       });
       return;
     }
@@ -45,13 +44,13 @@ class ClassroomController {
   static listAll = async (req: Request, res: Response) => {
     const classRoomRepository = AppDataSource.getRepository(Classroom);
     const classroom = await classRoomRepository.find({
-      select: ['id', 'name', 'decription', 'subject', 'teacherId']
+      select: ['id', 'name', 'description', 'subject', 'teacherId']
     });
     res.status(200).send({ error: false, data: classroom });
   };
   static editClassRoom = async (req: Request, res: Response) => {
     //Get values from the body
-    const { id, name, decription, subject, teacherId } = req.body;
+    const { id, name, description, subject, teacher_id } = req.body;
 
     //Try to find user on database
     const classRoomRepository = AppDataSource.getRepository(Classroom);
@@ -71,9 +70,9 @@ class ClassroomController {
     }
     //Validate the new values on model
     classroom.name = name;
-    classroom.decription = decription;
+    classroom.description = description;
     classroom.subject = subject;
-    classroom.teacherId = teacherId;
+    classroom.teacherId = teacher_id;
     const errors = await validate(classroom);
     if (errors.length > 0) {
       res.status(400).send({
@@ -84,7 +83,7 @@ class ClassroomController {
       return;
     }
     await classRoomRepository.save(classroom);
-    res.status(204).send({ Error: false, Code: 204 });
+    res.status(204).send();
   };
 
   static deleteClassRoom = async (req: Request, res: Response) => {
@@ -97,29 +96,29 @@ class ClassroomController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin lớp'
+        message: 'Không tìm thấy thông tin lớp!'
       });
       return;
     }
     classRoomRepository.delete(id);
     //After all send a 204 (no content, but accepted) response
-    res.status(204).send({ error: false, code: 204 });
+    res.status(204).send();
   };
 
-  static getListClassRoomtByTeacherId = async (req: Request, res: Response) => {
+  static getListClassRoomByTeacherId = async (req: Request, res: Response) => {
     const teacherId = Number(req.params.teacherId);
     const classRoomRepository = AppDataSource.getRepository(Classroom);
     try {
       const classrooms = await classRoomRepository.find({
         where: { teacherId: { id: teacherId } },
-        select: ['id', 'name', 'decription', 'subject', 'teacherId']
+        select: ['id', 'name', 'description', 'subject', 'teacherId']
       });
       res.status(200).send({ error: false, code: 200, data: classrooms });
     } catch (error) {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Lớp'
+        message: 'Không tìm thấy thông tin lớp!'
       });
       return;
     }

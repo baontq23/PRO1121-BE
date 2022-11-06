@@ -4,16 +4,27 @@ import { AppDataSource } from '../data-source';
 import { ClassStudent } from '../entity/ClassStudent';
 import { Parent } from '../entity/Parent';
 import { Student } from '../entity/Student';
-
+interface parentObj {
+  id: string;
+  name: string;
+  phone: string;
+}
+interface studentObj {
+  id: string;
+  name: string;
+  parent_id: any;
+  dob: string;
+  gender: string;
+}
 export class StudentController {
   static newStudent = async (req: Request, res: Response) => {
-    let { id, name, gender, dob, parentId } = req.body;
+    let { id, name, gender, dob, parent_id } = req.body;
     let student = new Student();
     student.id = id;
     student.name = name;
     student.dob = dob;
     student.gender = gender;
-    student.parentId = parentId;
+    student.parentId = parent_id;
 
     const errors = await validate(student);
     if (errors.length > 0) {
@@ -32,7 +43,7 @@ export class StudentController {
       res.status(500).send({
         error: true,
         code: 500,
-        message: 'server error'
+        message: 'Server error'
       });
       return;
     }
@@ -53,7 +64,7 @@ export class StudentController {
   };
   static editStudent = async (req: Request, res: Response) => {
     //Get values from the body
-    const { id, name, dob, gender, parentId } = req.body;
+    const { id, name, dob, gender, parent_id } = req.body;
 
     //Try to find user on database
     const studentRepository = AppDataSource.getRepository(Student);
@@ -67,7 +78,7 @@ export class StudentController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Học Sinh không tồn tại!'
+        message: 'Học sinh không tồn tại!'
       });
       return;
     }
@@ -75,7 +86,7 @@ export class StudentController {
     student.name = name;
     student.dob = dob;
     student.gender = gender;
-    student.parentId = parentId;
+    student.parentId = parent_id;
     const errors = await validate(student);
     if (errors.length > 0) {
       res.status(400).send({
@@ -86,26 +97,25 @@ export class StudentController {
       return;
     }
     await studentRepository.save(student);
-    res.status(204).send({ Error: false, Code: 204 });
+    res.status(204).send();
   };
 
   static deleteStudent = async (req: Request, res: Response) => {
     const id = req.params.id;
     const studentRepository = AppDataSource.getRepository(Student);
-    let student: Student;
     try {
-      student = await studentRepository.findOneOrFail({ where: { id } });
+      await studentRepository.findOneOrFail({ where: { id } });
     } catch (error) {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Học Sinh'
+        message: 'Không tìm thấy thông tin học sinh'
       });
       return;
     }
     studentRepository.delete(id);
     //After all send a 204 (no content, but accepted) response
-    res.status(204).send({ error: false, code: 204 });
+    res.status(204).send();
   };
 
   static getOneById = async (req: Request, res: Response) => {
@@ -122,7 +132,7 @@ export class StudentController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Học Sinh'
+        message: 'Không tìm thấy thông tin học sinh'
       });
       return;
     }
@@ -141,11 +151,12 @@ export class StudentController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Học Sinh'
+        message: 'Không tìm thấy thông tin học sinh'
       });
       return;
     }
   };
+
   static importListData = async (req: Request, res: Response) => {
     const parentRepository = AppDataSource.getRepository(Parent);
     const studentRepository = AppDataSource.getRepository(Student);
@@ -156,11 +167,11 @@ export class StudentController {
     const parentList = await parentRepository.find();
     if (parentList.length !== 0) {
       parents = parents.filter(
-        (item, index: number) => item.phone !== parentList[index].phone
+        (item:parentObj, index: number) => item.phone !== parentList[index].phone
       );
     }
     const studentArr = [];
-    students.forEach(item => {
+    students.forEach((item: studentObj) => {
       let student = new Student();
       student.id = item.id;
       student.dob = item.dob;
@@ -169,15 +180,15 @@ export class StudentController {
       student.parentId = item.parent_id;
       studentArr.push(student);
     });
-    const arrs = [];
-    parents.forEach(async item => {
+    const parentArr = [];
+    parents.forEach(async (item: parentObj) => {
       let parent = new Parent();
       parent.id = item.id;
       parent.name = item.name;
       parent.phone = item.phone;
       parent.password = '1234546';
       parent.hashPassword();
-      arrs.push(parent);
+      parentArr.push(parent);
     });
     const studentDetailArr = [];
     studentArr.forEach(item => {
@@ -190,20 +201,25 @@ export class StudentController {
       }
     });
     try {
-      const parentInsertResult = await parentRepository.save(arrs);
+      const parentInsertResult = await parentRepository.save(parentArr);
       const studentInsertResult = await studentRepository.save(studentArr);
       const studentDetailResult = await studentDetailRepository.save(
         studentDetailArr
       );
       res.status(201).send({
         error: false,
+        code: 201,
         parentInserted: parentInsertResult.length,
         studentInserted: studentInsertResult.length,
         stdInserted: studentDetailResult.length
       });
     } catch (error) {
       console.log(error);
-      res.status(500).send();
+      res.status(500).send({
+        error: true,
+        code: 500,
+        message: 'Server error!'
+      });
       return;
     }
   };

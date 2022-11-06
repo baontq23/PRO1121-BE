@@ -14,5 +14,6 @@ router.patch('/', ClassroomStudentController.editClassStudent);
 //Delete one ClassRoomStudent
 router.delete('/:id([0-9]+)', ClassroomStudentController.deleteClassStudent);
 
-
+//Import score data from file
+router.patch('/score/import', ClassroomStudentController.importScore);
 export default router;

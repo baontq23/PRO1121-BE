@@ -108,7 +108,7 @@ class FeedbackController {
       return;
     }
     feedbackRepository.delete(id);
-    res.status(204).send({ error: false, code: 204 });
+    res.status(204).send();
   };
 
   static listAll = async (req: Request, res: Response) => {
@@ -136,7 +136,7 @@ class FeedbackController {
   };
 
   static getAllByStudentId = async (req: Request, res: Response) => {
-    const student_id = Number(req.params.studentId);
+    const student_id = req.params.studentId;
     const feedbackRepository = AppDataSource.getRepository(Feedback);
     try {
       const feedback = await feedbackRepository.find({

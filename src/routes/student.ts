@@ -20,6 +20,7 @@ router.get('/:id([0-9]+)', StudentController.getOneById);
 
 router.get('/parentId/:parentId([0-9]+)', StudentController.getListStudentByParentId);
 
+router.post('/import', StudentController.importListData);
 
 export default router;
 

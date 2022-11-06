@@ -16,7 +16,7 @@ export class Classroom {
   @IsNotEmpty()
   name: string;
   @Column({ type: 'text', default: 'Chưa có mô tả cho lớp này'})
-  decription: string;
+  description: string;
   @Column({type: 'text'})
   @IsNotEmpty()
   subject: string;

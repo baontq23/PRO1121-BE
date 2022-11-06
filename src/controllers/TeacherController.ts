@@ -102,13 +102,7 @@ class TeacherController {
 
   static editUser = async (req: Request, res: Response) => {
     //Get values from the body
-    const {
-      id,
-      name,
-      email,
-      dob,
-      phone
-    } = req.body;
+    const { id, name, email, dob, phone } = req.body;
 
     //Try to find user on database
     const teacherRepository = AppDataSource.getRepository(Teacher);
@@ -158,7 +152,6 @@ class TeacherController {
   };
 
   static deleteUser = async (req: Request, res: Response) => {
-
     const id = parseInt(req.params.id);
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let user: Teacher;

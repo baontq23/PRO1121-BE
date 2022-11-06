@@ -12,7 +12,7 @@ class ParentController {
     res.status(200).send({ error: false, code: 200, data: parent });
   };
   static newParent = async (req: Request, res: Response) => {
-    let { id, name, password, email, dob, phone, fcmToken } = req.body;
+    let { id, name, password, email, dob, phone, fcm_token } = req.body;
     let parent = new Parent();
     parent.id = id;
     parent.name = name;
@@ -20,7 +20,7 @@ class ParentController {
     parent.dob = dob;
     parent.phone = phone;
     parent.email = email;
-    parent.fcmToken = fcmToken;
+    parent.fcmToken = fcm_token;
 
     const errors = await validate(parent);
     if (errors.length > 0) {
@@ -41,7 +41,8 @@ class ParentController {
       console.log(e);
       res.status(409).send({
         error: true,
-        code: 409
+        code: 409,
+        message: 'Số điện thoại đã tồn tại trên hệ thống!'
       });
       return;
     }
@@ -69,7 +70,7 @@ class ParentController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Phụ Huynh không tồn tại!'
+        message: 'Phụ huynh không tồn tại!'
       });
       return;
     }
@@ -105,14 +106,14 @@ class ParentController {
   static deleteParent = async (req: Request, res: Response) => {
     const id = req.params.id;
     const parentRepository = AppDataSource.getRepository(Parent);
-    let parent: Parent;
+
     try {
-      parent = await parentRepository.findOneOrFail({ where: { id } });
+      await parentRepository.findOneOrFail({ where: { id } });
     } catch (error) {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Phụ Huynh'
+        message: 'Không tìm thấy thông tin phụ huynh!'
       });
       return;
     }
@@ -134,12 +135,12 @@ class ParentController {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Không tìm thấy thông tin Phụ Huynh'
+        message: 'Không tìm thấy thông tin phụ huynh'
       });
       return;
     }
 
-    //Check if old password matchs
+    //Check if old password matches
     if (!parent.checkIfUnencryptedPasswordIsValid(old_password)) {
       res.status(401).send();
       return;
@@ -171,13 +172,17 @@ class ParentController {
       res.status(404).send({
         code: 404,
         error: true,
-        message: 'Login fail'
+        message: 'Số điện thoại không tồn tại trên hệ thống!'
       });
       return;
     }
 
     if (!parent.checkIfUnencryptedPasswordIsValid(password)) {
-      res.status(401).send();
+      res.status(401).send({
+        code: 404,
+        error: true,
+        message: 'Sai mật khẩu!'
+      });
       return;
     }
     res.send({
@@ -196,7 +201,7 @@ class ParentController {
         select: ['id', 'name', 'email', 'dob', 'phone', 'fcmToken'],
         where: { email }
       });
-      res.status(202).send({ error: false, data: parent });
+      res.status(200).send({ error: false, code: 200, data: parent });
     } catch (error) {
       res.status(404).send();
       return;
