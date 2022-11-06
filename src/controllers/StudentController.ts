@@ -1,6 +1,8 @@
 import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
+import { ClassStudent } from '../entity/ClassStudent';
+import { Parent } from '../entity/Parent';
 import { Student } from '../entity/Student';
 
 export class StudentController {
@@ -88,7 +90,7 @@ export class StudentController {
   };
 
   static deleteStudent = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const studentRepository = AppDataSource.getRepository(Student);
     let student: Student;
     try {
@@ -107,12 +109,12 @@ export class StudentController {
   };
 
   static getOneById = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const studentRepository = AppDataSource.getRepository(Student);
     let student: Student;
     try {
       student = await studentRepository.findOneOrFail({
-        where: { id: id },
+        where: { id },
         select: ['id', 'name', 'gender', 'dob', 'parentId']
       });
       res.status(200).send({ error: false, data: student, code: 200 });
@@ -144,5 +146,67 @@ export class StudentController {
       return;
     }
   };
+  static importListData = async (req: Request, res: Response) => {
+    const parentRepository = AppDataSource.getRepository(Parent);
+    const studentRepository = AppDataSource.getRepository(Student);
+    const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
+    const students = req.body.students;
+    const classroomId = req.body.classroom_id;
+    let parents = req.body.parents;
+    const parentList = await parentRepository.find();
+    if (parentList.length !== 0) {
+      parents = parents.filter(
+        (item, index: number) => item.phone !== parentList[index].phone
+      );
+    }
+    const studentArr = [];
+    students.forEach(item => {
+      let student = new Student();
+      student.id = item.id;
+      student.dob = item.dob;
+      student.name = item.name;
+      student.gender = item.gender;
+      student.parentId = item.parent_id;
+      studentArr.push(student);
+    });
+    const arrs = [];
+    parents.forEach(async item => {
+      let parent = new Parent();
+      parent.id = item.id;
+      parent.name = item.name;
+      parent.phone = item.phone;
+      parent.password = '1234546';
+      parent.hashPassword();
+      arrs.push(parent);
+    });
+    const studentDetailArr = [];
+    studentArr.forEach(item => {
+      for (let i = 1; i <= 2; i++) {
+        let studentDetail = new ClassStudent();
+        studentDetail.classroomId = classroomId;
+        studentDetail.studentId = item.id;
+        studentDetail.semester = i;
+        studentDetailArr.push(studentDetail);
+      }
+    });
+    try {
+      const parentInsertResult = await parentRepository.save(arrs);
+      const studentInsertResult = await studentRepository.save(studentArr);
+      const studentDetailResult = await studentDetailRepository.save(
+        studentDetailArr
+      );
+      res.status(201).send({
+        error: false,
+        parentInserted: parentInsertResult.length,
+        studentInserted: studentInsertResult.length,
+        stdInserted: studentDetailResult.length
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send();
+      return;
+    }
+  };
 }
+
 export default StudentController;
