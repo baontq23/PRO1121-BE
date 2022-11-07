@@ -11,7 +11,7 @@ export class Parent {
   @IsNotEmpty({ message: 'Tên không được để trống!' })
   name: string;
 
-  @Column({ type: 'text', unique: true, nullable: true })
+  @Column({ unique: true, nullable: true })
   email: string;
 
   @Column()
