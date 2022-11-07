@@ -8,7 +8,7 @@ export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text', unique: true, nullable: true})
+  @Column({ unique: true, nullable: true})
   email: string;
 
   @Column()
