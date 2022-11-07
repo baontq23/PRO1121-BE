@@ -18,8 +18,8 @@ export class Parent {
   @IsNotEmpty({ message: 'Mật khẩu không thể để trống!' })
   password: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  dob: Date;
+  @Column({ type: 'text', nullable:true })
+  dob: string;
 
   @Column({ type: 'text', unique: true })
   @IsNotEmpty({ message: 'Số điện thoại không thể để trống!' })

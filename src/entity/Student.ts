@@ -4,14 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryColumn
 } from 'typeorm';
 import { Parent } from './Parent';
 
 @Entity({ name: 'tbl_students' })
 export class Student {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @Column({ type: 'text' })
   @IsNotEmpty({ message: 'Tên không được để trống!' })
