@@ -15,7 +15,7 @@ export class Classroom {
   @Column({ type: 'text' })
   @IsNotEmpty()
   name: string;
-  @Column({ type: 'text', default: 'Chưa có mô tả cho lớp này'})
+  @Column({ type: 'text', nullable: true})
   description: string;
   @Column({type: 'text'})
   @IsNotEmpty()
