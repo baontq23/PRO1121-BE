@@ -27,7 +27,7 @@ export class Classroom {
   })
   @JoinColumn({
     name: 'teacher_id',
-    foreignKeyConstraintName: 'FK_Teacher_Classroom'
+    foreignKeyConstraintName: 'FK_Teacher_Classroom',
   })
   teacherId: Teacher;
 }

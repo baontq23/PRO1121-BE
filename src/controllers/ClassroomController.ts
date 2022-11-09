@@ -42,16 +42,17 @@ class ClassroomController {
   };
 
   static listAll = async (req: Request, res: Response) => {
-    const classRoomRepository = AppDataSource.getRepository(Classroom);
-    const classroom = await classRoomRepository.find({
-      select: ['id', 'name', 'description', 'subject', 'teacherId']
-    });
-    res.status(200).send({ error: false, data: classroom });
+  
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+   
+    let classroom = await queryRunner.manager.query('SELECT tbl_classrooms.name, tbl_classrooms.description, tbl_classrooms.subject, tbl_classrooms.teacher_id,COUNT(tbl_students.id) AS count FROM tbl_classrooms INNER JOIN tbl_class_students  ON tbl_class_students.classroom_id = tbl_classrooms.id INNER JOIN tbl_students ON tbl_class_students.student_id = tbl_students.id WHERE tbl_class_students.semester = 1 GROUP BY tbl_classrooms.id')
+    res.status(200).send({ error: false, data: { classroom } });
   };
   static editClassRoom = async (req: Request, res: Response) => {
     //Get values from the body
     const { id, name, description, subject, teacher_id } = req.body;
-
     //Try to find user on database
     const classRoomRepository = AppDataSource.getRepository(Classroom);
     let classroom: Classroom;
@@ -69,6 +70,7 @@ class ClassroomController {
       return;
     }
     //Validate the new values on model
+
     classroom.name = name;
     classroom.description = description;
     classroom.subject = subject;

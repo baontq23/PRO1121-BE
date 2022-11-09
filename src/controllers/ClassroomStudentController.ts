@@ -22,6 +22,26 @@ class ClassroomController {
     res.status(200).send({ error: false, code: 200, data: classStudent });
   };
 
+  static getAcademicTranscriptById = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      let academictranscript = await queryRunner.manager.query('SELECT * FROM tbl_class_students INNER JOIN tbl_students  ON tbl_class_students.student_id = tbl_students.id WHERE tbl_students.id = "' + id + '"')
+      res.status(200).send({ error: false, data: { academictranscript } });
+    } catch (error) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Học sinh không tồn tại!'
+      });
+      return;
+    }
+
+  }
+
   static newClassStudent = async (req: Request, res: Response) => {
     let {
       classroom_Id,
