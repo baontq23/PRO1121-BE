@@ -18,7 +18,7 @@ router.delete('/:id([0-9]+)', ClassroomStudentController.deleteClassStudent);
 router.get('/:idClass([0-9]+)', ClassroomStudentController.getAcademicTranscriptByIdClassRoom);
 
 //get All Information of Student and Parent
-router.get('/getinfo/:id([a-zA-Z0-9]+)/:idClass([0-9]+)', ClassroomStudentController.getAllInformationParentAndStudent);
+router.get('/getinfo/:id([a-zA-Z0-9-]+)/:idClass([0-9]+)', ClassroomStudentController.getAllInformationParentAndStudent);
 
 //Import score data from file
 router.patch('/score/import', ClassroomStudentController.importScore);

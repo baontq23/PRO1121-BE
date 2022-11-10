@@ -8,7 +8,7 @@ export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, nullable: true})
+  @Column({ unique: true, nullable: true })
   email: string;
 
   @Column()
@@ -19,12 +19,12 @@ export class Teacher {
   @IsNotEmpty({ message: 'Họ tên không thể để trống!' })
   name: string;
 
-  @Column({ type: 'text', unique:true})
-  @IsNotEmpty({message: 'Số điện thoại không thể để trống!'})
+  @Column({ type: 'text', unique: true })
+  @IsNotEmpty({ message: 'Số điện thoại không thể để trống!' })
   phone: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  dob: Date;
+  @Column({ nullable: true })
+  dob: string;
 
   hashPassword() {
     this.password = bcrypt.hashSync(this.password, 8);
