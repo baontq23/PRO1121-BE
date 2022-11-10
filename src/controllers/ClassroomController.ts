@@ -119,7 +119,7 @@ class ClassroomController {
         error: true,
         code: 404,
         message: 'Không tìm thấy thông tin lớp!'
-      });
+      }); 
     } else {
       res.status(200).send({ error: false, data: classroomByTeacherid });
     }
