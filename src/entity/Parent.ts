@@ -21,7 +21,7 @@ export class Parent {
   @Column({ type: 'text', nullable:true })
   dob: string;
 
-  @Column({ type: 'text', unique: true })
+  @Column({ unique: true })
   @IsNotEmpty({ message: 'Số điện thoại không thể để trống!' })
   phone: string;
 

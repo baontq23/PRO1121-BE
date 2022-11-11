@@ -19,7 +19,7 @@ export class Teacher {
   @IsNotEmpty({ message: 'Họ tên không thể để trống!' })
   name: string;
 
-  @Column({ type: 'text', unique: true })
+  @Column({ unique: true })
   @IsNotEmpty({ message: 'Số điện thoại không thể để trống!' })
   phone: string;
 
