@@ -165,11 +165,6 @@ export class StudentController {
     const classroomId = req.body.classroom_id;
     let parents = req.body.parents;
     const parentList = await parentRepository.find();
-    if (parentList.length !== 0) {
-      parents = parents.filter(
-        (item:parentObj, index: number) => item.phone !== parentList[index].phone
-      );
-    }
     const studentArr = [];
     students.forEach((item: studentObj) => {
       let student = new Student();
@@ -182,13 +177,15 @@ export class StudentController {
     });
     const parentArr = [];
     parents.forEach(async (item: parentObj) => {
-      let parent = new Parent();
-      parent.id = item.id;
-      parent.name = item.name;
-      parent.phone = item.phone;
-      parent.password = '1234546';
-      parent.hashPassword();
-      parentArr.push(parent);
+      if (parentList.findIndex(o => o.phone === item.phone) === -1) {
+        let parent = new Parent();
+        parent.id = item.id;
+        parent.name = item.name;
+        parent.phone = item.phone;
+        parent.password = '1234546';
+        parent.hashPassword();
+        parentArr.push(parent);
+      }
     });
     const studentDetailArr = [];
     studentArr.forEach(item => {

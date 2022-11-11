@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   host: 'localhost',
   port: 3306,
   username: 'root',
-  password: 'pro1121',
+  password: '',
   database: 'easyedu_db',
   synchronize: true,
   logging: false,
