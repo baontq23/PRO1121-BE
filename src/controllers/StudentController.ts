@@ -163,17 +163,25 @@ export class StudentController {
     const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
     const students = req.body.students;
     const classroomId = req.body.classroom_id;
-    let parents = req.body.parents;
+    const parents = req.body.parents;
+    const studentList = await studentRepository.find();
     const parentList = await parentRepository.find();
     const studentArr = [];
     students.forEach((item: studentObj) => {
-      let student = new Student();
-      student.id = item.id;
-      student.dob = item.dob;
-      student.name = item.name;
-      student.gender = item.gender;
-      student.parentId = item.parent_id;
-      studentArr.push(student);
+      const studentTmp = studentList.filter(item2 => {
+        return item.name === item2.name && item.dob === item2.dob;
+      });
+      if (studentTmp.length === 0) {
+        const student = new Student();
+        student.id = item.id;
+        student.dob = item.dob;
+        student.name = item.name;
+        student.gender = item.gender;
+        student.parentId = item.parent_id;
+        studentArr.push(studentList);
+      }else {
+        studentArr.push(studentTmp[0])
+      }
     });
     const parentArr = [];
     parents.forEach(async (item: parentObj) => {
