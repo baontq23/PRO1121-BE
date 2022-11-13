@@ -5,11 +5,16 @@ import { Classroom } from '../entity/Classroom';
 
 class ClassroomController {
   static newClassroom = async (req: Request, res: Response) => {
-    let { name, description, subject, teacher_id } = req.body;
+    let {
+      classroom_name,
+      classroom_description,
+      classroom_subject,
+      teacher_id
+    } = req.body;
     let classroom = new Classroom();
-    classroom.name = name;
-    classroom.description = description;
-    classroom.subject = subject;
+    classroom.name = classroom_name;
+    classroom.description = classroom_description;
+    classroom.subject = classroom_subject;
     classroom.teacherId = teacher_id;
 
     const errors = await validate(classroom);
@@ -53,13 +58,19 @@ class ClassroomController {
   };
   static editClassRoom = async (req: Request, res: Response) => {
     //Get values from the body
-    const { id, name, description, subject, teacher_id } = req.body;
+    const {
+      classroom_id,
+      classroom_name,
+      classroom_description,
+      classroom_subject,
+      teacher_id
+    } = req.body;
     //Try to find user on database
     const classRoomRepository = AppDataSource.getRepository(Classroom);
     let classroom: Classroom;
     try {
       classroom = await classRoomRepository.findOneOrFail({
-        where: { id }
+        where: { id: classroom_id }
       });
     } catch (error) {
       //If not found, send a 404 response
@@ -72,9 +83,9 @@ class ClassroomController {
     }
     //Validate the new values on model
 
-    classroom.name = name;
-    classroom.description = description;
-    classroom.subject = subject;
+    classroom.name = classroom_name;
+    classroom.description = classroom_description;
+    classroom.subject = classroom_subject;
     classroom.teacherId = teacher_id;
     const errors = await validate(classroom);
     if (errors.length > 0) {
