@@ -13,12 +13,12 @@ router.post('/', StudentController.newStudent);
 router.patch('/', StudentController.editStudent);
 
 //Delete one Student
-router.delete('/:id([0-9]+)', StudentController.deleteStudent);
+router.delete('/:id([a-zA-Z0-9-]+)', StudentController.deleteStudent);
 
 //get one by id
-router.get('/:id([0-9]+)', StudentController.getOneById);
+router.get('/:id([a-zA-Z0-9-]+)', StudentController.getOneById);
 
-router.get('/parentId/:parentId([0-9]+)', StudentController.getListStudentByParentId);
+router.get('/parentId/:parentId([a-zA-Z0-9-]+)', StudentController.getListStudentByParentId);
 
 router.post('/import', StudentController.importListData);
 

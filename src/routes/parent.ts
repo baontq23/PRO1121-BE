@@ -12,10 +12,10 @@ router.post('/', ParentController.newParent);
 router.patch('/', ParentController.editParent);
 
 //Delete one Parent
-router.delete('/:id([0-9]+)', ParentController.deleteParent);
+router.delete('/:id([a-zA-Z0-9-]+)', ParentController.deleteParent);
 
 //ChangePassword one Parent
-router.patch('/changePassword/:id([0-9]+)', ParentController.changePassword);
+router.patch('/changePassword/:id([a-zA-Z0-9-]+)', ParentController.changePassword);
 
 //get one by email
 router.get('/login/:email', ParentController.getOneByEmail);

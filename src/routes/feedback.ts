@@ -11,7 +11,7 @@ router.get('/:id([0-9]+)', FeedbackController.getOneById);
 
 //Get all by studentId
 router.get(
-  '/studentId/:studentId([0-9]+)',
+  '/studentId/:studentId([a-zA-Z0-9-]+)',
   FeedbackController.getAllByStudentId
 );
 
