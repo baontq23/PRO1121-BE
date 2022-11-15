@@ -20,6 +20,9 @@ router.patch('/changePassword/:id([0-9]+)', ParentController.changePassword);
 //get one by email
 router.get('/login/:email', ParentController.getOneByEmail);
 
+//get list Parent by classroomId
+router.get('/:idClassroom([A-Za-z0-9]+)', ParentController.getListParentByClassroomID);
+
 //login by Phone
 router.post('/login', ParentController.loginByPhone);
 

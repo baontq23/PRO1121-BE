@@ -18,8 +18,8 @@ interface studentObj {
 }
 export class StudentController {
   static newStudent = async (req: Request, res: Response) => {
-    let { id, name, gender, dob, parent_id } = req.body;
-    let student = new Student();
+    const { id, name, gender, dob, parent_id } = req.body;
+    const student = new Student();
     student.id = id;
     student.name = name;
     student.dob = dob;
@@ -113,9 +113,19 @@ export class StudentController {
       });
       return;
     }
-    studentRepository.delete(id);
-    //After all send a 204 (no content, but accepted) response
-    res.status(204).send();
+    studentRepository
+      .delete(id)
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(500).send({
+          error: true,
+          code: 500,
+          message: 'Server error'
+        });
+      });
   };
 
   static getOneById = async (req: Request, res: Response) => {
@@ -163,22 +173,30 @@ export class StudentController {
     const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
     const students = req.body.students;
     const classroomId = req.body.classroom_id;
-    let parents = req.body.parents;
+    const parents = req.body.parents;
+    const studentList = await studentRepository.find();
     const parentList = await parentRepository.find();
     const studentArr = [];
     students.forEach((item: studentObj) => {
-      let student = new Student();
-      student.id = item.id;
-      student.dob = item.dob;
-      student.name = item.name;
-      student.gender = item.gender;
-      student.parentId = item.parent_id;
-      studentArr.push(student);
+      const studentTmp = studentList.filter(item2 => {
+        return item.name === item2.name && item.dob === item2.dob;
+      });
+      if (studentTmp.length === 0) {
+        const student = new Student();
+        student.id = item.id;
+        student.dob = item.dob;
+        student.name = item.name;
+        student.gender = item.gender;
+        student.parentId = item.parent_id;
+        studentArr.push(studentList);
+      } else {
+        studentArr.push(studentTmp[0]);
+      }
     });
     const parentArr = [];
     parents.forEach(async (item: parentObj) => {
       if (parentList.findIndex(o => o.phone === item.phone) === -1) {
-        let parent = new Parent();
+        const parent = new Parent();
         parent.id = item.id;
         parent.name = item.name;
         parent.phone = item.phone;
@@ -190,7 +208,7 @@ export class StudentController {
     const studentDetailArr = [];
     studentArr.forEach(item => {
       for (let i = 1; i <= 2; i++) {
-        let studentDetail = new ClassStudent();
+        const studentDetail = new ClassStudent();
         studentDetail.classroomId = classroomId;
         studentDetail.studentId = item.id;
         studentDetail.semester = i;

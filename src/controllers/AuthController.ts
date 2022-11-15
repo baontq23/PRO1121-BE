@@ -6,7 +6,7 @@ import { Teacher } from '../entity/Teacher';
 class AuthController {
   static login = async (req: Request, res: Response) => {
     //Check if username and password are set
-    let { phone, password } = req.body;
+    const { phone, password } = req.body;
     if (!(phone && password)) {
       res.status(400).send();
     }

@@ -5,10 +5,11 @@ import { Feedback } from '../entity/Feedback';
 
 class FeedbackController {
   static newFeedback = async (req: Request, res: Response) => {
-    let { content, date, teacher_id, student_id } = req.body;
-    let feedback = new Feedback();
-    feedback.content = content;
-    feedback.date = date;
+    const { feedback_content, feedback_date, teacher_id, student_id } =
+      req.body;
+    const feedback = new Feedback();
+    feedback.content = feedback_content;
+    feedback.date = feedback_date;
     feedback.teacherId = teacher_id;
     feedback.studentId = student_id;
 
@@ -43,14 +44,20 @@ class FeedbackController {
   };
 
   static editFeedback = async (req: Request, res: Response) => {
-    const { id, content, date, teacher_id, student_id } = req.body;
+    const {
+      feedback_id,
+      feedback_content,
+      feedback_date,
+      teacher_id,
+      student_id
+    } = req.body;
 
     //Try to find id on database
     const feedbackRepository = AppDataSource.getRepository(Feedback);
     let feedback: Feedback;
     try {
       feedback = await feedbackRepository.findOneOrFail({
-        where: { id }
+        where: { id: feedback_id }
       });
     } catch (error) {
       res.status(404).send({
@@ -62,8 +69,8 @@ class FeedbackController {
     }
 
     //Validate
-    feedback.content = content;
-    feedback.date = date;
+    feedback.content = feedback_content;
+    feedback.date = feedback_date;
     feedback.teacherId = teacher_id;
     feedback.studentId = student_id;
     const errors = await validate(feedback);
@@ -107,8 +114,19 @@ class FeedbackController {
       });
       return;
     }
-    feedbackRepository.delete(id);
-    res.status(204).send();
+    feedbackRepository
+      .delete(id)
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(500).send({
+          error: true,
+          code: 500,
+          message: 'Server error'
+        });
+      });
   };
 
   static listAll = async (req: Request, res: Response) => {

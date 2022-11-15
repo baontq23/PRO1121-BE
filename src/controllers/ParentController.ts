@@ -12,8 +12,8 @@ class ParentController {
     res.status(200).send({ error: false, code: 200, data: parent });
   };
   static newParent = async (req: Request, res: Response) => {
-    let { id, name, password, email, dob, phone, fcm_token } = req.body;
-    let parent = new Parent();
+    const { id, name, password, email, dob, phone, fcm_token } = req.body;
+    const parent = new Parent();
     parent.id = id;
     parent.name = name;
     parent.password = password;
@@ -158,7 +158,7 @@ class ParentController {
     res.status(204).send();
   };
   static loginByPhone = async (req: Request, res: Response) => {
-    let { phone, password } = req.body;
+    const { phone, password } = req.body;
     if (!(phone && password)) {
       res.status(400).send();
     }
@@ -193,7 +193,7 @@ class ParentController {
   };
 
   static getOneByEmail = async (req: Request, res: Response) => {
-    let email = req.params.email;
+    const email = req.params.email;
     const parentRepository = AppDataSource.getRepository(Parent);
     let parent: Parent;
     try {
@@ -207,6 +207,20 @@ class ParentController {
       return;
     }
   };
+  static getListParentByClassroomID =async  (req: Request, res: Response) => {
+    const idClassroom = parseInt(req.params.idClassroom);
+    const queryRunner = AppDataSource.manager;
+    const getAllInformation = await queryRunner.query('SELECT tbl_parents.id AS parent_id ,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone, tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents INNER JOIN tbl_students ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_class_students.semester = 1 AND tbl_classrooms.id = "'+idClassroom+'"')
+    if (getAllInformation.length === 0) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Lớp học không tồn tại !'
+      });
+    } else {
+      res.status(200).send({ error: false, data: getAllInformation });
+    }
+  }
 }
 
 export default ParentController;
