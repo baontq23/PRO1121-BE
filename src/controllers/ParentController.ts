@@ -209,12 +209,8 @@ class ParentController {
   };
   static getListParentByClassroomID =async  (req: Request, res: Response) => {
     const idClassroom = parseInt(req.params.idClassroom);
-
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    let getAllInformation = await queryRunner.manager.query('SELECT tbl_parents.id AS parent_id ,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone, tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents INNER JOIN tbl_students ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_class_students.semester = 1 AND tbl_classrooms.id = "'+idClassroom+'"')
+    const queryRunner = AppDataSource.manager;
+    let getAllInformation = await queryRunner.query('SELECT tbl_parents.id AS parent_id ,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone, tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents INNER JOIN tbl_students ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_class_students.semester = 1 AND tbl_classrooms.id = "'+idClassroom+'"')
     if (getAllInformation.length === 0) {
       res.status(404).send({
         error: true,

@@ -47,11 +47,8 @@ class ClassroomController {
   };
 
   static listAll = async (req: Request, res: Response) => {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    let classroom = await queryRunner.manager.query(
+    const queryRunner = AppDataSource.manager;
+    let classroom = await queryRunner.query(
       'SELECT tbl_classrooms.name, tbl_classrooms.description, tbl_classrooms.subject, tbl_classrooms.teacher_id,COUNT(tbl_students.id) AS count FROM tbl_classrooms INNER JOIN tbl_class_students  ON tbl_class_students.classroom_id = tbl_classrooms.id INNER JOIN tbl_students ON tbl_class_students.student_id = tbl_students.id WHERE tbl_class_students.semester = 1 GROUP BY tbl_classrooms.id'
     );
     res.status(200).send({ error: false, data: classroom });
@@ -123,10 +120,8 @@ class ClassroomController {
 
   static getListClassRoomByTeacherId = async (req: Request, res: Response) => {
     const teacherId = parseInt(req.params.teacherId);
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const classroomByTeacherId = await queryRunner.manager.query(
+    const queryRunner = AppDataSource.manager;
+    const classroomByTeacherId = await queryRunner.query(
       `SELECT tbl_classrooms.id AS 'classroom_id', tbl_classrooms.name AS 'classroom_name', tbl_classrooms.description AS 'classroom_description', ROUND(COUNT(tbl_class_students.student_id) / 2) AS 'classroom_count', tbl_teachers.id AS 'teacher_id' FROM tbl_teachers LEFT JOIN tbl_classrooms on tbl_teachers.id = tbl_classrooms.teacher_id LEFT JOIN tbl_class_students ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_classrooms.teacher_id is not null AND tbl_classrooms.teacher_id = ${teacherId} GROUP BY tbl_classrooms.id`
     );
 
