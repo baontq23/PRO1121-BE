@@ -17,7 +17,8 @@ export class Student {
   @IsNotEmpty({ message: 'Tên không được để trống!' })
   name: string;
 
-  @Column({ type: 'text', default: '' })
+  @Column()
+  @IsNotEmpty({message: 'Ngày sinh không được để trống!'})
   dob: string;
 
   @Column({ type: 'text', nullable: true })
