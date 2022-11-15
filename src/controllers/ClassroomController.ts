@@ -5,13 +5,13 @@ import { Classroom } from '../entity/Classroom';
 
 class ClassroomController {
   static newClassroom = async (req: Request, res: Response) => {
-    let {
+    const {
       classroom_name,
       classroom_description,
       classroom_subject,
       teacher_id
     } = req.body;
-    let classroom = new Classroom();
+    const classroom = new Classroom();
     classroom.name = classroom_name;
     classroom.description = classroom_description;
     classroom.subject = classroom_subject;
@@ -48,7 +48,7 @@ class ClassroomController {
 
   static listAll = async (req: Request, res: Response) => {
     const queryRunner = AppDataSource.manager;
-    let classroom = await queryRunner.query(
+    const classroom = await queryRunner.query(
       'SELECT tbl_classrooms.name, tbl_classrooms.description, tbl_classrooms.subject, tbl_classrooms.teacher_id,COUNT(tbl_students.id) AS count FROM tbl_classrooms INNER JOIN tbl_class_students  ON tbl_class_students.classroom_id = tbl_classrooms.id INNER JOIN tbl_students ON tbl_class_students.student_id = tbl_students.id WHERE tbl_class_students.semester = 1 GROUP BY tbl_classrooms.id'
     );
     res.status(200).send({ error: false, data: classroom });
@@ -93,8 +93,19 @@ class ClassroomController {
       });
       return;
     }
-    await classRoomRepository.save(classroom);
-    res.status(204).send();
+    classRoomRepository
+      .save(classroom)
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(500).send({
+          error: true,
+          code: 500,
+          message: 'Server error'
+        });
+      });
   };
 
   static deleteClassRoom = async (req: Request, res: Response) => {
@@ -113,9 +124,19 @@ class ClassroomController {
       });
       return;
     }
-    classRoomRepository.delete(id);
-    //After all send a 204 (no content, but accepted) response
-    res.status(204).send();
+    classRoomRepository
+      .delete(id)
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(500).send({
+          error: true,
+          code: 500,
+          message: 'Server error'
+        });
+      });
   };
 
   static getListClassRoomByTeacherId = async (req: Request, res: Response) => {
