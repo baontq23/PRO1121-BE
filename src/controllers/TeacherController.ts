@@ -57,8 +57,8 @@ class TeacherController {
 
   static newTeacher = async (req: Request, res: Response) => {
     //Get parameters from the body
-    let { phone, password, name, email } = req.body;
-    let teacher = new Teacher();
+    const { phone, password, name, email } = req.body;
+    const teacher = new Teacher();
     teacher.phone = phone;
     teacher.password = password;
     teacher.name = name;
@@ -165,9 +165,19 @@ class TeacherController {
       });
       return;
     }
-    teacherRepository.delete(id);
-    //After all send a 204 (no content, but accepted) response
-    res.status(204).send();
+    teacherRepository
+      .delete(id)
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(500).send({
+          error: true,
+          code: 500,
+          message: 'Server error'
+        });
+      });
   };
 }
 
