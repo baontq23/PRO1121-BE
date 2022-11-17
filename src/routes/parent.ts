@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import ParentController from '../controllers/ParentController';
 
 const router = Router();
@@ -15,15 +15,24 @@ router.patch('/', ParentController.editParent);
 router.delete('/:id([a-zA-Z0-9-]+)', ParentController.deleteParent);
 
 //ChangePassword one Parent
-router.patch('/changePassword/:id([a-zA-Z0-9-]+)', ParentController.changePassword);
+router.patch(
+  '/changePassword/:id([a-zA-Z0-9-]+)',
+  ParentController.changePassword
+);
 
 //get one by email
 router.get('/login/:email', ParentController.getOneByEmail);
 
 //get list Parent by classroomId
-router.get('/:idClassroom([A-Za-z0-9]+)', ParentController.getListParentByClassroomID);
+router.get(
+  '/:idClassroom([A-Za-z0-9]+)',
+  ParentController.getListParentByClassroomID
+);
 
 //login by Phone
 router.post('/login', ParentController.loginByPhone);
+
+//get parent by phone
+router.get('/phone/:phone([0-9]+)', ParentController.getParentByPhone);
 
 export default router;
