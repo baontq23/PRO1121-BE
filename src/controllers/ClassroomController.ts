@@ -143,7 +143,7 @@ class ClassroomController {
     const teacherId = parseInt(req.params.teacherId);
     const queryRunner = AppDataSource.manager;
     const classroomByTeacherId = await queryRunner.query(
-      `SELECT tbl_classrooms.id AS 'classroom_id', tbl_classrooms.name AS 'classroom_name', tbl_classrooms.description AS 'classroom_description', ROUND(COUNT(tbl_class_students.student_id) / 2) AS 'classroom_count', tbl_teachers.id AS 'teacher_id' FROM tbl_teachers LEFT JOIN tbl_classrooms on tbl_teachers.id = tbl_classrooms.teacher_id LEFT JOIN tbl_class_students ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_classrooms.teacher_id is not null AND tbl_classrooms.teacher_id = ${teacherId} GROUP BY tbl_classrooms.id`
+      `SELECT tbl_classrooms.id AS 'classroom_id', tbl_classrooms.name AS 'classroom_name', tbl_classrooms.description AS 'classroom_description', tbl_classrooms.subject AS 'classroom_subject', ROUND(COUNT(tbl_class_students.student_id) / 2) AS 'classroom_count', tbl_teachers.id AS 'teacher_id' FROM tbl_teachers LEFT JOIN tbl_classrooms on tbl_teachers.id = tbl_classrooms.teacher_id LEFT JOIN tbl_class_students ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_classrooms.teacher_id is not null AND tbl_classrooms.teacher_id = ${teacherId} GROUP BY tbl_classrooms.id`
     );
 
     if (classroomByTeacherId.length === 0) {
