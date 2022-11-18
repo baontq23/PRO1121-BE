@@ -5,9 +5,9 @@ import { ClassStudent } from '../entity/ClassStudent';
 import { Parent } from '../entity/Parent';
 import { Student } from '../entity/Student';
 interface parentObj {
-  id: string;
-  name: string;
-  phone: string;
+  parent_id: string;
+  parent_name: string;
+  parent_phone: string;
 }
 interface studentObj {
   id: string;
@@ -188,18 +188,18 @@ export class StudentController {
         student.name = item.name;
         student.gender = item.gender;
         student.parentId = item.parent_id;
-        studentArr.push(studentList);
+        studentArr.push(student);
       } else {
         studentArr.push(studentTmp[0]);
       }
     });
     const parentArr = [];
     parents.forEach(async (item: parentObj) => {
-      if (parentList.findIndex(o => o.phone === item.phone) === -1) {
+      if (parentList.findIndex(o => o.phone === item.parent_phone) === -1) {
         const parent = new Parent();
-        parent.id = item.id;
-        parent.name = item.name;
-        parent.phone = item.phone;
+        parent.id = item.parent_id;
+        parent.name = item.parent_name;
+        parent.phone = item.parent_phone;
         parent.password = '1234546';
         parent.hashPassword();
         parentArr.push(parent);
