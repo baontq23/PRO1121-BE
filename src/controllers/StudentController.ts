@@ -13,6 +13,7 @@ interface studentObj {
   id: string;
   name: string;
   parent_id: any;
+  parent_phone: string;
   dob: string;
   gender: string;
 }
@@ -187,7 +188,12 @@ export class StudentController {
         student.dob = item.dob;
         student.name = item.name;
         student.gender = item.gender;
-        student.parentId = item.parent_id;
+        const parentTmpId = parentList.filter(p => p.phone === item.parent_phone);
+        if (parentTmpId.length === 0) {
+          student.parentId = item.parent_id;
+        }else {
+          student.parentId = parentTmpId[0];
+        }
         studentArr.push(student);
       } else {
         studentArr.push(studentTmp[0]);
