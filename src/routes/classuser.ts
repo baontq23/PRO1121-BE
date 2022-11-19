@@ -17,6 +17,9 @@ router.delete('/:id([0-9]+)', ClassroomStudentController.deleteClassStudent);
 //get Academic Transcript Student By Id ClassRoom
 router.get('/:idClass([0-9]+)', ClassroomStudentController.getAcademicTranscriptByIdClassRoom);
 
+//delete student in classStudent
+router.delete('/:idStudent([a-zA-Z0-9-]+)/:idClass([0-9]+)', ClassroomStudentController.deleteStudentInClassUser);
+
 //get All Information of Students and Parent
 router.get('/getinfo/:id([a-zA-Z0-9-]+)/:idClass([0-9]+)', ClassroomStudentController.getAllInformationParentAndStudent);
 
