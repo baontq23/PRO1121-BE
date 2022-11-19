@@ -12,15 +12,15 @@ class ParentController {
     res.status(200).send({ error: false, code: 200, data: parent });
   };
   static newParent = async (req: Request, res: Response) => {
-    const { id, name, password, email, dob, phone, fcm_token } = req.body;
+    const { parent_id, parent_name, parent_email, parent_dob, parent_phone } =
+      req.body;
     const parent = new Parent();
-    parent.id = id;
-    parent.name = name;
-    parent.password = password;
-    parent.dob = dob;
-    parent.phone = phone;
-    parent.email = email;
-    parent.fcmToken = fcm_token;
+    parent.id = parent_id;
+    parent.name = parent_name;
+    parent.password = '123456';
+    parent.dob = parent_dob;
+    parent.phone = parent_phone;
+    parent.email = parent_email;
 
     const errors = await validate(parent);
     if (errors.length > 0) {

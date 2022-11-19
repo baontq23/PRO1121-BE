@@ -17,28 +17,63 @@ interface studentObj {
   dob: string;
   gender: string;
 }
+interface studentScore {
+  regular_score_1: number;
+  regular_score_2: number;
+  regular_score_3: number;
+  midterm_score: number;
+  final_score: number;
+  semester: number;
+}
 export class StudentController {
   static newStudent = async (req: Request, res: Response) => {
-    const { id, name, gender, dob, parent_id } = req.body;
-    const student = new Student();
-    student.id = id;
-    student.name = name;
-    student.dob = dob;
-    student.gender = gender;
-    student.parentId = parent_id;
-
-    const errors = await validate(student);
-    if (errors.length > 0) {
-      res.status(400).send({
-        error: true,
-        code: 400,
-        message: errors[0].constraints
-      });
-      return;
-    }
     const studentRepository = AppDataSource.getRepository(Student);
+    const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
+    const studentList = await studentRepository.find();
+    const { id, name, gender, dob, parent_id, classroom_id, scores } = req.body;
+    const studentTemp = studentList.filter(item => {
+      return name === item.name && dob === item.dob;
+    });
+    let student = new Student();
+    if (studentTemp.length === 0) {
+      student.id = id;
+      student.name = name;
+      student.dob = dob;
+      student.gender = gender;
+      student.parentId = parent_id;
+
+      const errors = await validate(student);
+      if (errors.length > 0) {
+        res.status(400).send({
+          error: true,
+          code: 400,
+          message: errors[0].constraints
+        });
+        return;
+      }
+    } else {
+      student = studentTemp[0];
+    }
+    const studentDetailArr = [];
+    for (let i = 1; i <= 2; i++) {
+      const studentDetail = new ClassStudent();
+      studentDetail.classroomId = classroom_id;
+      studentDetail.studentId = student;
+      studentDetail.semester = i;
+      scores.forEach((s: studentScore) => {
+        if (s.semester === i) {
+          studentDetail.regularScore1 = s.regular_score_1;
+          studentDetail.regularScore2 = s.regular_score_2;
+          studentDetail.regularScore3 = s.regular_score_3;
+          studentDetail.midtermScore = s.midterm_score;
+          studentDetail.finalScore = s.final_score;
+        }
+      });
+      studentDetailArr.push(studentDetail);
+    }
     try {
       await studentRepository.save(student);
+      await studentDetailRepository.save(studentDetailArr);
     } catch (e) {
       console.log(e);
       res.status(500).send({
@@ -188,10 +223,12 @@ export class StudentController {
         student.dob = item.dob;
         student.name = item.name;
         student.gender = item.gender;
-        const parentTmpId = parentList.filter(p => p.phone === item.parent_phone);
+        const parentTmpId = parentList.filter(
+          p => p.phone === item.parent_phone
+        );
         if (parentTmpId.length === 0) {
           student.parentId = item.parent_id;
-        }else {
+        } else {
           student.parentId = parentTmpId[0];
         }
         studentArr.push(student);
