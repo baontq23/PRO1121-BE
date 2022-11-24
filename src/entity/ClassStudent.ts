@@ -17,7 +17,7 @@ export class ClassStudent {
   @ManyToOne(() => Classroom, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    eager: true
+    eager: false
   })
   @JoinColumn({
     name: 'classroom_id',
@@ -28,7 +28,7 @@ export class ClassStudent {
   @ManyToOne(() => Student, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    eager: true
+    eager: false
   })
   @JoinColumn({
     name: 'student_id',
@@ -54,5 +54,4 @@ export class ClassStudent {
   @Column()
   @IsNotEmpty()
   semester: number;
-
 }
