@@ -166,15 +166,25 @@ export class StudentController {
 
   static getOneById = async (req: Request, res: Response) => {
     const id = req.params.id;
+    const classId = parseInt(req.params.classId);
     const studentRepository = AppDataSource.getRepository(Student);
-    let student: Student;
+    const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
+
     try {
-      student = await studentRepository.findOneOrFail({
+      const student = await studentRepository.findOneOrFail({
         where: { id },
         select: ['id', 'name', 'gender', 'dob', 'parentId']
       });
-      res.status(200).send({ error: false, data: student, code: 200 });
+      const scoreDetail = await studentDetailRepository.find({
+        where: { studentId: { id }, classroomId: { id: classId } },
+        loadRelationIds: true
+      });
+      res.status(200).send({
+        error: false,
+        data: { student, scores: scoreDetail }
+      });
     } catch (error) {
+      console.log(error);
       res.status(404).send({
         error: true,
         code: 404,
