@@ -48,7 +48,7 @@ class AuthController {
     const teacherRepository = AppDataSource.getRepository(Teacher);
     let teacher: Teacher;
     try {
-      teacher = await teacherRepository.findOneOrFail(id);
+      teacher = await teacherRepository.findOneOrFail({ where: { id } });
     } catch (error) {
       console.log(error);
       res.status(401).send();
