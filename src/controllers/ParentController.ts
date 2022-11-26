@@ -20,7 +20,7 @@ class ParentController {
     parent.password = '123456';
     parent.dob = parent_dob;
     parent.phone = parent_phone;
-    parent.email = parent_email;
+    parent.email = parent_email ? parent_name : null;
 
     const errors = await validate(parent);
     if (errors.length > 0) {
@@ -56,14 +56,21 @@ class ParentController {
   };
   static editParent = async (req: Request, res: Response) => {
     //Get values from the body
-    const { id, name, dob, phone, email } = req.body;
+    const {
+      parent_id,
+      parent_name,
+      parent_email,
+      parent_dob,
+      parent_phone,
+      parent_fcmtoken
+    } = req.body;
 
     //Try to find user on database
     const parentRepository = AppDataSource.getRepository(Parent);
     let parent: Parent;
     try {
       parent = await parentRepository.findOneOrFail({
-        where: { id }
+        where: { id: parent_id }
       });
     } catch (error) {
       //If not found, send a 404 response
@@ -75,10 +82,11 @@ class ParentController {
       return;
     }
     //Validate the new values on model
-    parent.name = name;
-    parent.dob = dob;
-    parent.phone = phone;
-    parent.email = email;
+    parent.name = parent_name;
+    parent.dob = parent_dob ? parent_dob : null;
+    parent.phone = parent_phone;
+    parent.email = parent_email ? parent_email : null;
+    parent.fcmToken = parent_fcmtoken;
     const errors = await validate(parent);
     if (errors.length > 0) {
       res.status(400).send({
@@ -179,7 +187,7 @@ class ParentController {
 
     if (!parent.checkIfUnencryptedPasswordIsValid(password)) {
       res.status(401).send({
-        code: 404,
+        code: 401,
         error: true,
         message: 'Sai mật khẩu!'
       });
