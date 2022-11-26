@@ -118,7 +118,7 @@ export class StudentController {
       score.regularScore2 = item.regular_score_2 ? item.regular_score_2 : null;
       score.regularScore3 = item.regular_score_3 ? item.regular_score_3 : null;
       score.midtermScore = item.midterm_score ? item.midterm_score : null;
-      score.finalScore = item.midterm_score ? item.midterm_score : null;
+      score.finalScore = item.final_score ? item.final_score : null;
       score.semester = item.semester;
       scoreUpdate.push(score);
     });
@@ -281,7 +281,7 @@ export class StudentController {
         parent.id = item.parent_id;
         parent.name = item.parent_name;
         parent.phone = item.parent_phone;
-        parent.password = '1234546';
+        parent.password = '123456';
         parent.hashPassword();
         parentArr.push(parent);
       }
