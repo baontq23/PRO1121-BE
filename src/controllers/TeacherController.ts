@@ -122,7 +122,11 @@ class TeacherController {
     }
 
     //Validate the new values on model
-    teacher.email = email;
+    if(email === ""){
+      teacher.email = null;
+    }else{
+      teacher.email = email;
+    }
     teacher.name = name;
     teacher.dob = dob;
     teacher.phone = phone;
