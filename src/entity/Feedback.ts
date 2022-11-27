@@ -8,12 +8,12 @@ export class Feedback {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'text'})
-  @IsNotEmpty({message: 'Nội dung không thể để trống!'})
+  @Column({ type: 'text' })
+  @IsNotEmpty({ message: 'Nội dung không thể để trống!' })
   content: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date: Date;
+  @Column({ type: 'bigint', nullable: true })
+  date: number;
 
   @ManyToOne(() => Teacher, {
     onDelete: 'CASCADE',
