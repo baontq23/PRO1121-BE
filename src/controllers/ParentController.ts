@@ -20,7 +20,7 @@ class ParentController {
     parent.password = '123456';
     parent.dob = parent_dob;
     parent.phone = parent_phone;
-    parent.email = parent_email ? parent_name : null;
+    parent.email = parent_email ? parent_email : null;
 
     const errors = await validate(parent);
     if (errors.length > 0) {
@@ -171,12 +171,36 @@ class ParentController {
       res.status(400).send();
     }
     const parentRepository = AppDataSource.getRepository(Parent);
-    let parent: Parent;
+    const parent = new Parent();
     try {
-      parent = await parentRepository.findOneOrFail({
-        where: { phone }
+      const rawParent = await parentRepository
+        .createQueryBuilder('parent')
+        .select([
+          'parent.id AS parent_id',
+          'parent.name AS parent_name',
+          'parent.password AS parent_password',
+          'parent.dob AS parent_dob',
+          'parent.phone AS parent_phone',
+          'parent.fcmToken AS parent_fcmtoken'
+        ])
+        .where('parent.phone = :phone', { phone })
+        .getRawOne();
+      parent.password = rawParent.parent_password;
+      if (!parent.checkIfUnencryptedPasswordIsValid(password)) {
+        res.status(401).send({
+          code: 401,
+          error: true,
+          message: 'Sai mật khẩu!'
+        });
+        return;
+      }
+      res.send({
+        error: false,
+        code: 200,
+        data: rawParent
       });
     } catch (error) {
+      console.log(error);
       res.status(404).send({
         code: 404,
         error: true,
@@ -184,20 +208,6 @@ class ParentController {
       });
       return;
     }
-
-    if (!parent.checkIfUnencryptedPasswordIsValid(password)) {
-      res.status(401).send({
-        code: 401,
-        error: true,
-        message: 'Sai mật khẩu!'
-      });
-      return;
-    }
-    res.send({
-      error: false,
-      code: 200,
-      data: parent
-    });
   };
 
   static getOneByEmail = async (req: Request, res: Response) => {
