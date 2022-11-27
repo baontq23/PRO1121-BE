@@ -176,13 +176,30 @@ class FeedbackController {
     const classRoom_id = req.params.classRoomId;
     const queryRunner = AppDataSource.manager;
     const getAllFeedBack = await queryRunner.query(
-      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date  FROM tbl_feedbacks INNER JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id INNER JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id  WHERE tbl_class_students.semester = 1 AND tbl_class_students.classroom_id = '"+classRoom_id+"' AND tbl_students.id = '"+student_id+"'"
+      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date  FROM tbl_feedbacks INNER JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id INNER JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id  WHERE tbl_class_students.semester = 1 AND tbl_class_students.classroom_id = '" + classRoom_id + "' AND tbl_students.id = '" + student_id + "'"
     );
     if (getAllFeedBack.length === 0) {
       res.status(404).send({
         error: true,
         code: 404,
-        message: 'Lớp học không tồn tại !'
+        message: 'feedback không tồn tại !'
+      });
+    } else {
+      res.status(200).send({ error: false, data: getAllFeedBack });
+    }
+  };
+
+  static getAllByParentId = async (req: Request, res: Response) => {
+    const parent_id = req.params.parentId;
+    const queryRunner = AppDataSource.manager;
+    const getAllFeedBack = await queryRunner.query(
+      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date, tbl_classrooms.name AS classroom_name FROM tbl_feedbacks INNER JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id INNER JOIN tbl_parents ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_class_students.classroom_id = tbl_classrooms.id WHERE tbl_parents.id = '" + parent_id + "' AND tbl_class_students.semester = 1"
+    );
+    if (getAllFeedBack.length === 0) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'feedback không tồn tại !'
       });
     } else {
       res.status(200).send({ error: false, data: getAllFeedBack });
