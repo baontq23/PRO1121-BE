@@ -24,4 +24,8 @@ router.patch('/', FeedbackController.editFeedback);
 //Delete
 router.delete('/:id([0-9]+)', FeedbackController.deleteFeedback);
 
+
+//getAllByClassRoomId
+router.get('/:studentId([a-zA-Z0-9-]+)/:classRoomId([0-9])+', FeedbackController.getAllByClassRoomId);
+
 export default router;
