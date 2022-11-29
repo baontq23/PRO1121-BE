@@ -1,5 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Classroom } from './Classroom';
 import { Student } from './Student';
 import { Teacher } from './Teacher';
 
@@ -15,21 +16,21 @@ export class Feedback {
   @Column({ type: 'bigint', nullable: true })
   date: number;
 
-  @ManyToOne(() => Teacher, {
+  @ManyToOne(() => Classroom, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    eager: true
+    eager: false
   })
   @JoinColumn({
-    name: 'teacher_id',
-    foreignKeyConstraintName: 'FK_Teacher_Feedback'
+    name: 'classroom_id',
+    foreignKeyConstraintName: 'FK_ClassRoom_Feedback'
   })
-  teacherId: Teacher;
+  classroom: Classroom;
 
   @ManyToOne(() => Student, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    eager: true
+    eager: false
   })
   @JoinColumn({
     name: 'student_id',
