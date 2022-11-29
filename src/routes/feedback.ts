@@ -3,9 +3,6 @@ import FeedbackController from '../controllers/FeedbackController';
 
 const router = Router();
 
-//Get all
-router.get('/', FeedbackController.listAll);
-
 //Get one by id
 router.get('/:id([0-9]+)', FeedbackController.getOneById);
 
@@ -17,6 +14,9 @@ router.get(
 
 //Create a new feedback
 router.post('/', FeedbackController.newFeedback);
+
+//Create multi feedback
+router.post('/multi', FeedbackController.newMultiFeedback);
 
 //Edit
 router.patch('/', FeedbackController.editFeedback);
