@@ -262,6 +262,24 @@ class ParentController {
       return;
     }
   };
+  static gradeOfTheSubject = async (req: Request, res: Response) => {
+    const idStudent = req.params.id;
+    const queryRunner = AppDataSource.manager;
+    const gradeOfTheSubject = await queryRunner.query(
+      'SELECT tbl_classrooms.name AS classroom_name, tbl_class_students.regularScore1 , tbl_class_students.regularScore2 , tbl_class_students.regularScore3 , tbl_class_students.midtermScore ,tbl_class_students.finalScore , tbl_class_students.semester FROM tbl_students JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_students.id = "' +
+        idStudent +
+        '"'
+    );
+    if (gradeOfTheSubject.length === 0) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Học sinh chưa tham gia lớp nào !'
+      });
+    } else {
+      res.status(200).send({ error: false, data: gradeOfTheSubject });
+    }
+  };
 }
 
 export default ParentController;
