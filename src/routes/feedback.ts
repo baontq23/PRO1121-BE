@@ -26,7 +26,7 @@ router.delete('/:id([0-9]+)', FeedbackController.deleteFeedback);
 
 //getAllByClassRoomId
 router.get(
-  '/student/class/:studentId([a-zA-Z0-9-]+)/:classRoomId([0-9])+',
+  '/student/class/:studentId([a-zA-Z0-9-]+)/:classRoomId([0-9]+)',
   FeedbackController.getAllByClassRoomId
 );
 
