@@ -1,11 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Parent } from './Parent';
 
 @Entity({ name: 'tbl_students' })
@@ -18,7 +12,7 @@ export class Student {
   name: string;
 
   @Column()
-  @IsNotEmpty({message: 'Ngày sinh không được để trống!'})
+  @IsNotEmpty({ message: 'Ngày sinh không được để trống!' })
   dob: string;
 
   @Column({ type: 'text', nullable: true })
@@ -26,8 +20,7 @@ export class Student {
 
   @ManyToOne(() => Parent, {
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-    eager: true
+    onUpdate: 'CASCADE'
   })
   @JoinColumn({
     name: 'parent_id',

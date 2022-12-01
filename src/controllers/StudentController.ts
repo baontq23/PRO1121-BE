@@ -96,13 +96,6 @@ export class StudentController {
     });
   };
 
-  static listAll = async (req: Request, res: Response) => {
-    const studentRepository = AppDataSource.getRepository(Student);
-    const student = await studentRepository.find({
-      select: ['id', 'name', 'gender', 'dob', 'parentId']
-    });
-    res.status(200).send({ error: false, data: student });
-  };
   static editStudent = async (req: Request, res: Response) => {
     const studentData: studentObj = req.body.student;
     const studentScore = req.body.scores;
@@ -197,12 +190,20 @@ export class StudentController {
     const classId = parseInt(req.params.classId);
     const studentRepository = AppDataSource.getRepository(Student);
     const studentDetailRepository = AppDataSource.getRepository(ClassStudent);
-
+    const parentRepository = AppDataSource.getRepository(Parent);
     try {
-      const student = await studentRepository.findOneOrFail({
-        where: { id },
-        select: ['id', 'name', 'gender', 'dob', 'parentId']
+      let student = await studentRepository
+        .createQueryBuilder('student')
+        .where('student.id = :id', { id })
+        .loadAllRelationIds()
+        .getOneOrFail();
+      const parent = await parentRepository.findOneOrFail({
+        where: { id: student.parentId.id }
       });
+      student = {
+        ...student,
+        parentId: parent
+      };
       const scoreDetail = await studentDetailRepository.find({
         where: { studentId: { id }, classroomId: { id: classId } },
         loadRelationIds: true
@@ -228,7 +229,8 @@ export class StudentController {
     try {
       const students = await studentRepository.find({
         where: { parentId: { id: parentId } },
-        select: ['id', 'name', 'gender', 'dob', 'parentId']
+        select: ['id', 'name', 'gender', 'dob'],
+        loadRelationIds: true
       });
       res.status(200).send({ error: false, code: 200, data: students });
     } catch (error) {
