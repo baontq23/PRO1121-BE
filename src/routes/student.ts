@@ -3,9 +3,6 @@ import StudentController from '../controllers/StudentController';
 
 const router = Router();
 
-//Get all Student
-router.get('/', StudentController.listAll);
-
 //Create a new Student
 router.post('/', StudentController.newStudent);
 
