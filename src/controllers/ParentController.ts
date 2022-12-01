@@ -266,7 +266,7 @@ class ParentController {
     const idStudent = req.params.id;
     const queryRunner = AppDataSource.manager;
     const gradeOfTheSubject = await queryRunner.query(
-      'SELECT tbl_classrooms.name AS classroom_name, tbl_class_students.regularScore1 , tbl_class_students.regularScore2 , tbl_class_students.regularScore3 , tbl_class_students.midtermScore ,tbl_class_students.finalScore , tbl_class_students.semester FROM tbl_students JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_students.id = "' +
+      'SELECT tbl_classrooms.name AS classroom_name, tbl_classrooms.subject AS classroom_subject, tbl_class_students.regularScore1 , tbl_class_students.regularScore2 , tbl_class_students.regularScore3 , tbl_class_students.midtermScore ,tbl_class_students.finalScore , tbl_class_students.semester FROM tbl_students JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_students.id = "' +
         idStudent +
         '"'
     );
