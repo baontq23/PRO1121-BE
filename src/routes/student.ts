@@ -19,7 +19,7 @@ router.get(
 );
 
 router.get(
-  '/parentId/:parentId([a-zA-Z0-9-]+)',
+  '/parent/:parentId([a-zA-Z0-9-]+)',
   StudentController.getListStudentByParentId
 );
 

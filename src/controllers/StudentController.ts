@@ -198,7 +198,7 @@ export class StudentController {
         .loadAllRelationIds()
         .getOneOrFail();
       const parent = await parentRepository.findOneOrFail({
-        where: { id: student.parentId.id }
+        where: { id: '' + student.parentId }
       });
       student = {
         ...student,
