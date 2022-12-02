@@ -30,10 +30,4 @@ router.get(
   FeedbackController.getAllByClassRoomId
 );
 
-//getAllByParentId
-router.get(
-  '/parent/:parentId([a-zA-Z0-9-]+)',
-  FeedbackController.getAllByParentId
-);
-
 export default router;
