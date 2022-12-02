@@ -188,12 +188,17 @@ class FeedbackController {
     const student_id = req.params.studentId;
     const feedbackRepository = AppDataSource.getRepository(Feedback);
     try {
-      const feedback = await feedbackRepository.find({
-        select: ['id', 'content', 'date', 'classroom', 'studentId'],
-        where: { studentId: { id: student_id } }
-      });
+      const feedback = await feedbackRepository
+        .createQueryBuilder('feedback')
+        .innerJoin('feedback.classroom', 'classroom_id')
+        .select(
+          'feedback.id AS feedback_id, feedback.content AS feedback_content, feedback.date AS feedback_date, classroom_id.name AS classroom_name, classroom_id.subject AS classroom_subject'
+        )
+        .where('feedback.studentId = :studentId', { studentId: student_id })
+        .getRawMany();
       res.send({ error: false, data: feedback });
     } catch (error) {
+      console.log(error);
       res.status(404).send({
         error: true,
         code: 404,
@@ -207,7 +212,11 @@ class FeedbackController {
     const classRoom_id = req.params.classRoomId;
     const queryRunner = AppDataSource.manager;
     const getAllFeedBack = await queryRunner.query(
-      'SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date  FROM tbl_feedbacks WHERE tbl_feedbacks.classroom_id = "'+classRoom_id+'"  AND tbl_feedbacks.student_id = "'+student_id+'"'
+      'SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date  FROM tbl_feedbacks WHERE tbl_feedbacks.classroom_id = "' +
+        classRoom_id +
+        '"  AND tbl_feedbacks.student_id = "' +
+        student_id +
+        '"'
     );
     if (getAllFeedBack.length === 0) {
       res.status(404).send({
@@ -224,7 +233,9 @@ class FeedbackController {
     const parent_id = req.params.parentId;
     const queryRunner = AppDataSource.manager;
     const getAllFeedBack = await queryRunner.query(
-      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date , tbl_classrooms.name AS classroom_name  FROM tbl_feedbacks JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id JOIN tbl_parents ON tbl_students.parent_id = tbl_parents.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_feedbacks.classroom_id WHERE tbl_parents.id = '"+parent_id+"'"
+      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date , tbl_classrooms.name AS classroom_name  FROM tbl_feedbacks JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id JOIN tbl_parents ON tbl_students.parent_id = tbl_parents.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_feedbacks.classroom_id WHERE tbl_parents.id = '" +
+        parent_id +
+        "'"
     );
     if (getAllFeedBack.length === 0) {
       res.status(404).send({
