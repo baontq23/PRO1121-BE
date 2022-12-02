@@ -219,6 +219,23 @@ class FeedbackController {
       res.status(200).send({ error: false, data: getAllFeedBack });
     }
   };
+
+  static getAllByParentId = async (req: Request, res: Response) => {
+    const parent_id = req.params.parentId;
+    const queryRunner = AppDataSource.manager;
+    const getAllFeedBack = await queryRunner.query(
+      "SELECT tbl_feedbacks.content AS feedback_content , tbl_feedbacks.date AS feedback_date , tbl_classrooms.name AS classroom_name  FROM tbl_feedbacks JOIN tbl_students ON tbl_students.id = tbl_feedbacks.student_id JOIN tbl_parents ON tbl_students.parent_id = tbl_parents.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_feedbacks.classroom_id WHERE tbl_parents.id = '"+parent_id+"'"
+    );
+    if (getAllFeedBack.length === 0) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'feedback không tồn tại !'
+      });
+    } else {
+      res.status(200).send({ error: false, data: getAllFeedBack });
+    }
+  };
 }
 
 export default FeedbackController;
