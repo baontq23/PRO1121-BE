@@ -38,5 +38,6 @@ router.get('/phone/:phone([0-9]+)', ParentController.getParentByPhone);
 //get grade of the subject (grade of student)
 router.get('/analytics/student/:id([a-zA-Z0-9-]+)', ParentController.gradeOfTheSubject);
 
+router.get('/analytics/student/:id([a-zA-Z0-9-]+)/:classId([0-9]+)', ParentController.gradeSubjectByClass);
 
 export default router;
