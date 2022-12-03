@@ -229,9 +229,9 @@ class ParentController {
     const idClassroom = parseInt(req.params.idClassroom);
     const queryRunner = AppDataSource.manager;
     const getAllInformation = await queryRunner.query(
-      'SELECT tbl_parents.id AS parent_id ,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone, tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents INNER JOIN tbl_students ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_class_students.semester = 1 AND tbl_classrooms.id = "' +
+      'SELECT tbl_parents.id AS parent_id ,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone, tbl_parents.fcmToken AS parent_fcmtoken, tbl_students.id AS student_id , tbl_students.name AS student_name FROM tbl_parents INNER JOIN tbl_students ON tbl_parents.id = tbl_students.parent_id INNER JOIN tbl_class_students ON tbl_students.id = tbl_class_students.student_id INNER JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id WHERE tbl_class_students.semester = 1 AND tbl_classrooms.id = "' +
         idClassroom +
-        '" GROUP BY tbl_parents.phone'
+        '"'
     );
     if (getAllInformation.length === 0) {
       res.status(404).send({
@@ -287,7 +287,8 @@ class ParentController {
     const gradeOfTheSubject = await queryRunner.query(
       'SELECT tbl_classrooms.name AS classroom_name, tbl_classrooms.subject AS classroom_subject, tbl_teachers.name AS teacher_name, tbl_teachers.phone AS teacher_phone, tbl_students.name AS student_name,tbl_students.gender AS student_gender, tbl_students.dob AS student_dob, tbl_class_students.regularScore1 AS regular_score_1, tbl_class_students.regularScore2 AS regular_score_2, tbl_class_students.regularScore3 AS regular_score_3, tbl_class_students.midtermScore AS midterm_score ,tbl_class_students.finalScore AS final_score , tbl_class_students.semester FROM tbl_students JOIN tbl_class_students on tbl_class_students.student_id = tbl_students.id JOIN tbl_classrooms ON tbl_classrooms.id = tbl_class_students.classroom_id JOIN tbl_teachers ON tbl_teachers.id = tbl_classrooms.teacher_id WHERE tbl_students.id =  "' +
         idStudent +
-        '" AND tbl_classrooms.id = ' + classId 
+        '" AND tbl_classrooms.id = ' +
+        classId
     );
     if (gradeOfTheSubject.length === 0) {
       res.status(404).send({
