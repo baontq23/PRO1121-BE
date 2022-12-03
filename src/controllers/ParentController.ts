@@ -212,17 +212,16 @@ class ParentController {
 
   static getOneByEmail = async (req: Request, res: Response) => {
     const email = req.params.email;
-    const parentRepository = AppDataSource.getRepository(Parent);
-    let parent: Parent;
-    try {
-      parent = await parentRepository.findOneOrFail({
-        select: ['id', 'name', 'email', 'dob', 'phone', 'fcmToken'],
-        where: { email }
+    const queryRunner = AppDataSource.manager;
+    const getInformation = await queryRunner.query('SELECT tbl_parents.id AS parent_id,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone,tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents WHERE tbl_parents.email = "'+email+'"');
+    if (getInformation.length === 0) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Phụ huynh không tồn tại !'
       });
-      res.status(200).send({ error: false, code: 200, data: parent });
-    } catch (error) {
-      res.status(404).send();
-      return;
+    } else {
+      res.status(200).send({ error: false, data: getInformation });
     }
   };
   static getListParentByClassroomID = async (req: Request, res: Response) => {
