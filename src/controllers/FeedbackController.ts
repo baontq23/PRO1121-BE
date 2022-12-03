@@ -194,6 +194,7 @@ class FeedbackController {
         .select(
           'feedback.id AS feedback_id, feedback.content AS feedback_content, feedback.date AS feedback_date, classroom_id.name AS classroom_name, classroom_id.subject AS classroom_subject'
         )
+        .orderBy('feedback.date', 'DESC')
         .where('feedback.studentId = :studentId', { studentId: student_id })
         .getRawMany();
       res.send({ error: false, data: feedback });
