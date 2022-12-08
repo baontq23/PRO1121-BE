@@ -11,6 +11,9 @@ router.post('/', ParentController.newParent);
 //Edit one Parent
 router.patch('/', ParentController.editParent);
 
+//Reset password
+router.patch('/resetpass/:id([a-zA-Z0-9-]+)', ParentController.resetPassword);
+
 //Delete one Parent
 router.delete('/:id([a-zA-Z0-9-]+)', ParentController.deleteParent);
 
