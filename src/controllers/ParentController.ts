@@ -70,6 +70,7 @@ class ParentController {
     }
     parent.password = '123456';
     parent.hashPassword();
+    await parentRepository.save(parent);
     res.status(204).send();
   };
 
