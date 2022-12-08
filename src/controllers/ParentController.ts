@@ -54,6 +54,25 @@ class ParentController {
       message: 'Đăng ký thành công!'
     });
   };
+  static resetPassword = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const parentRepository = AppDataSource.getRepository(Parent);
+    let parent: Parent;
+    try {
+      parent = await parentRepository.findOneOrFail({ where: { id } });
+    } catch (error) {
+      res.status(404).send({
+        error: true,
+        code: 404,
+        message: 'Không tìm thấy thông tin phụ huynh'
+      });
+      return;
+    }
+    parent.password = '123456';
+    parent.hashPassword();
+    res.status(204).send();
+  };
+
   static editParent = async (req: Request, res: Response) => {
     //Get values from the body
     const {
@@ -213,7 +232,11 @@ class ParentController {
   static getOneByEmail = async (req: Request, res: Response) => {
     const email = req.params.email;
     const queryRunner = AppDataSource.manager;
-    const getInformation = await queryRunner.query('SELECT tbl_parents.id AS parent_id,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone,tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents WHERE tbl_parents.email = "'+email+'"');
+    const getInformation = await queryRunner.query(
+      'SELECT tbl_parents.id AS parent_id,tbl_parents.name AS parent_name,tbl_parents.email AS parent_email,tbl_parents.dob AS parent_dob, tbl_parents.phone AS parent_phone,tbl_parents.fcmToken AS parent_fcmtoken FROM tbl_parents WHERE tbl_parents.email = "' +
+        email +
+        '"'
+    );
     if (getInformation.length === 0) {
       res.status(404).send({
         error: true,
