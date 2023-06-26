@@ -11,4 +11,4 @@ npm start
 
 # LICENSE
 
-[MIT](https://github.com/baontq23/jwt-express-mysql-typeorm-typescript-template/blob/master/LICENSE)
+[Apache 2.0](https://github.com/baontq23/jwt-express-mysql-typeorm-typescript-template/blob/master/LICENSE)
